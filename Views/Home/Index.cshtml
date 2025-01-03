@@ -1,0 +1,22 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Welcome to Absence Management System</h1>
+    <div class="row mt-4">
+        <div class="col-md-3">
+            <a asp-controller="Students" asp-action="Index" class="btn btn-primary btn-lg btn-block">Manage Students</a>
+        </div>
+        <div class="col-md-3">
+            <a asp-controller="Teachers" asp-action="Index" class="btn btn-primary btn-lg btn-block">Manage Teachers</a>
+        </div>
+        <div class="col-md-3">
+            <a asp-controller="Subjects" asp-action="Index" class="btn btn-primary btn-lg btn-block">Manage Subjects</a>
+        </div>
+        <div class="col-md-3">
+            <a asp-controller="Absences" asp-action="MarkAbsence" class="btn btn-primary btn-lg btn-block">Mark Absences</a>
+        </div>
+    </div>
+</div>
+

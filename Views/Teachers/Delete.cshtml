@@ -1,0 +1,10 @@
+﻿@model Absence.Models.T_Enseignant
+
+<h2>Delete Teacher</h2>
+<p>Are you sure you want to delete the teacher <strong>@Model.Nom @Model.Prenom</strong>?</p>
+
+<form asp-action="DeleteConfirmed" method="post">
+    <input type="hidden" asp-for="CodeEnseignant" />
+    <button type="submit" class="btn btn-danger">Delete</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+</form>

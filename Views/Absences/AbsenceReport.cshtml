@@ -1,0 +1,21 @@
+﻿@model List<Absence.ViewModels.StudentAbsenceReportViewModel>
+
+<h2>Absence Report</h2>
+
+<table>
+    <thead>
+        <tr>
+            <th>Student</th>
+            <th>Number of Absences</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var report in Model)
+        {
+            <tr>
+                <td>@report.StudentName</td>
+                <td>@report.AbsenceCount</td>
+            </tr>
+        }
+    </tbody>
+</table>

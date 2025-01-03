@@ -1,0 +1,33 @@
+﻿@model IEnumerable<Absence.Models.T_Enseignant>
+
+<h2>Teachers</h2>
+<a asp-action="Create" class="btn btn-primary">Add New Teacher</a>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Department</th>
+            <th>Grade</th>
+            <th>Email</th>
+            <th>Phone</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var teacher in Model)
+        {
+            <tr>
+                <td>@teacher.Nom @teacher.Prenom</td>
+                <td>@teacher.Departement.NomDepartement</td>
+                <td>@teacher.Grade.NomGrade</td>
+                <td>@teacher.Mail</td>
+                <td>@teacher.Tel</td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@teacher.CodeEnseignant" class="btn btn-warning">Edit</a>
+                    <a asp-action="Delete" asp-route-id="@teacher.CodeEnseignant" class="btn btn-danger">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

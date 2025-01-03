@@ -1,0 +1,37 @@
+﻿@model Absence.ViewModels.MarkAbsenceViewModel
+
+<h2>Mark Absences</h2>
+
+<form asp-action="MarkAbsence" method="post">
+    <div>
+        <h4>Select Class</h4>
+        <select asp-for="Absences" asp-items="@(new SelectList(Model.Classes, "CodeClasse", "NomClasse"))">
+        </select>
+    </div>
+    <div>
+        <h4>Select Seance</h4>
+        <select asp-for="Absences" asp-items="@(new SelectList(Model.Seances, "CodeSeance", "NomSeance"))">
+        </select>
+    </div>
+    <table>
+        <thead>
+            <tr>
+                <th>Student</th>
+                <th>Absent?</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var student in Model.Classes.SelectMany(c => c.Etudiants))
+            {
+                <tr>
+                    <td>@student.Nom</td>
+                    <td>
+                        <input type="checkbox" name="Absences[@student.CodeEtudiant].IsAbsent" />
+                        <input type="hidden" name="Absences[@student.CodeEtudiant].StudentId" value="@student.CodeEtudiant" />
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <button type="submit">Submit</button>
+</form>

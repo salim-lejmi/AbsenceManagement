@@ -1,0 +1,21 @@
+﻿@model List<Absence.ViewModels.AbsenceDetailsViewModel>
+
+<h2>Absence Details</h2>
+
+<table>
+    <thead>
+        <tr>
+            <th>Date</th>
+            <th>Seance</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var detail in Model)
+        {
+            <tr>
+                <td>@detail.Date.ToShortDateString()</td>
+                <td>@detail.SeanceName</td>
+            </tr>
+        }
+    </tbody>
+</table>
