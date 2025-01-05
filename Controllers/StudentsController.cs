@@ -214,34 +214,31 @@
             return View(student);
         }
 
+        public async Task<IActionResult> Delete(int? id)
+        {
+            if (id == null) return NotFound();
 
+            var student = await _context.Etudiants
+                .Include(s => s.Classe)
+                .FirstOrDefaultAsync(s => s.CodeEtudiant == id);
 
-        [HttpPost]
-            [ValidateAntiForgeryToken]
-            public async Task<IActionResult> DeleteConfirmed(int id)
-            {
-                Debug.WriteLine($"Attempting to delete student ID: {id}");
+            if (student == null) return NotFound();
 
-                try
-                {
-                    var student = await _context.Etudiants.FindAsync(id);
-                    if (student != null)
-                    {
-                        _context.Etudiants.Remove(student);
-                        await _context.SaveChangesAsync();
-                        Debug.WriteLine("Student deleted successfully");
-                    }
-                    else
-                    {
-                        Debug.WriteLine("Delete failed: Student not found");
-                    }
-                    return RedirectToAction(nameof(Index));
-                }
-                catch (Exception ex)
-                {
-                    Debug.WriteLine($"Error deleting student: {ex.Message}");
-                    throw;
-                }
-            }
+            return View(student);
         }
+
+
+
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            var student = await _context.Etudiants.FindAsync(id);
+            _context.Etudiants.Remove(student);
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
+        }
+
+
     }
+}
