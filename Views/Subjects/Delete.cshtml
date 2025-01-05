@@ -1,0 +1,10 @@
+﻿@model Absence.Models.T_Matiere
+
+<h2>Delete Subject</h2>
+<p>Are you sure you want to delete the subject <strong>@Model.NomMatiere</strong>?</p>
+
+<form asp-action="Delete" asp-route-id="@Model.CodeMatiere" method="post">
+    <input type="hidden" asp-for="CodeMatiere" />
+    <button type="submit" class="btn btn-danger">Delete</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+</form>

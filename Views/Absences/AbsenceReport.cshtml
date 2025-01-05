@@ -1,0 +1,61 @@
+﻿    @model List<Absence.ViewModels.StudentAbsenceReportViewModel>
+
+    <div class="container mt-4">
+        <h2>Absence Report</h2>
+
+        <form asp-action="AbsenceReport" method="get" class="mb-4">
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label for="startDate">Start Date</label>
+                        <input type="date" name="startDate" id="startDate" class="form-control" required
+                               value="@(Context.Request.Query["startDate"].ToString())" />
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label for="endDate">End Date</label>
+                        <input type="date" name="endDate" id="endDate" class="form-control" required
+                               value="@(Context.Request.Query["endDate"].ToString())" />
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <button type="submit" class="btn btn-primary mt-4">Generate Report</button>
+                </div>
+            </div>
+        </form>
+
+        @if (Model != null && Model.Any())
+        {
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Student</th>
+                            <th>Number of Absences</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var report in Model)
+                        {
+                            <tr>
+                                <td>@report.StudentName</td>
+                                <td>@report.AbsenceCount</td>
+                                <td>
+                                    <a href="@Url.Action("AbsenceDetails", new { studentId = report.StudentId, subjectId = ViewBag.SubjectId })"
+                                       class="btn btn-info btn-sm">View Details</a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else if (Context.Request.Query.Count > 0)
+        {
+            <div class="alert alert-info">
+                No absences found for the selected date range.
+            </div>
+        }
+    </div>

@@ -1,0 +1,35 @@
+﻿@model Absence.Models.T_Enseignant
+
+<h2>Edit Teacher</h2>
+
+<form asp-action="Edit" method="post">
+    <div class="form-group">
+        <label asp-for="Nom">First Name</label>
+        <input asp-for="Nom" class="form-control" />
+    </div>
+    <div class="form-group">
+        <label asp-for="Prenom">Last Name</label>
+        <input asp-for="Prenom" class="form-control" />
+    </div>
+    <div class="form-group">
+        <label asp-for="Mail">Email</label>
+        <input asp-for="Mail" class="form-control" />
+    </div>
+    <div class="form-group">
+        <label asp-for="Tel">Phone</label>
+        <input asp-for="Tel" class="form-control" />
+    </div>
+    <div class="form-group">
+        <label asp-for="CodeDepartement">Department</label>
+        <select asp-for="CodeDepartement" asp-items="@(new SelectList(ViewData["Departments"] as List<Absence.Models.T_Departement>, "CodeDepartement", "NomDepartement"))" class="form-control">
+            <option value="">Select Department</option>
+        </select>
+    </div>
+    <div class="form-group">
+        <label asp-for="CodeGrade">Grade</label>
+        <select asp-for="CodeGrade" asp-items="@(new SelectList(ViewData["Grades"] as List<Absence.Models.T_Grade>, "CodeGrade", "NomGrade"))" class="form-control">
+            <option value="">Select Grade</option>
+        </select>
+    </div>
+    <button type="submit" class="btn btn-primary">Edit</button>
+</form>

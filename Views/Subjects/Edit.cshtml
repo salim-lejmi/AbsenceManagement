@@ -1,0 +1,44 @@
+﻿@model Absence.Models.T_Matiere
+
+<h2>Edit Subject</h2>
+
+<form asp-action="Edit" asp-controller="Subjects" method="post">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+    <input type="hidden" asp-for="CodeMatiere" />
+
+    <div class="form-group">
+        <label asp-for="NomMatiere" class="control-label">Subject Name</label>
+        <input asp-for="NomMatiere" class="form-control" />
+        <span asp-validation-for="NomMatiere" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="NbrHeureCoursParSemaine" class="control-label">Course Hours/Week</label>
+        <input asp-for="NbrHeureCoursParSemaine" class="form-control" type="number" />
+        <span asp-validation-for="NbrHeureCoursParSemaine" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="NbrHeureTDParSemaine" class="control-label">TD Hours/Week</label>
+        <input asp-for="NbrHeureTDParSemaine" class="form-control" type="number" />
+        <span asp-validation-for="NbrHeureTDParSemaine" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="NbrHeureTPParSemaine" class="control-label">TP Hours/Week</label>
+        <input asp-for="NbrHeureTPParSemaine" class="form-control" type="number" />
+        <span asp-validation-for="NbrHeureTPParSemaine" class="text-danger"></span>
+    </div>
+
+    <div class="form-group mt-3">
+        <input type="submit" value="Save" class="btn btn-primary" />
+        <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+    </div>
+</form>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

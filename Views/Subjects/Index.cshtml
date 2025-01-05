@@ -1,0 +1,27 @@
+﻿@model IEnumerable<Absence.Models.T_Matiere>
+
+<h2>Subjects</h2>
+<a asp-action="Create" class="btn btn-primary">Add New Subject</a>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Hours (Course/TD/TP)</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var subject in Model)
+        {
+            <tr>
+                <td>@subject.NomMatiere</td>
+                <td>@subject.NbrHeureCoursParSemaine / @subject.NbrHeureTDParSemaine / @subject.NbrHeureTPParSemaine</td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@subject.CodeMatiere" class="btn btn-warning">Edit</a>
+                    <a asp-action="Delete" asp-route-id="@subject.CodeMatiere" class="btn btn-danger">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
