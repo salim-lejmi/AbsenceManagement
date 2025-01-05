@@ -34,55 +34,74 @@ namespace Absence.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Nom,Prenom,DateRecrutement,Adresse,Mail,Tel,CodeDepartement,CodeGrade")] T_Enseignant teacher)
         {
+            Console.WriteLine("\n=== Starting Teacher Create Process ===");
+
             try
             {
-                // Debug: Log the incoming model data
-                Console.WriteLine("Teacher Create - Incoming Data:");
-                Console.WriteLine($"Nom: {teacher.Nom}");
-                Console.WriteLine($"Prenom: {teacher.Prenom}");
-                Console.WriteLine($"DateRecrutement: {teacher.DateRecrutement}");
-                Console.WriteLine($"Adresse: {teacher.Adresse}");
-                Console.WriteLine($"Mail: {teacher.Mail}");
-                Console.WriteLine($"Tel: {teacher.Tel}");
-                Console.WriteLine($"CodeDepartement: {teacher.CodeDepartement}");
-                Console.WriteLine($"CodeGrade: {teacher.CodeGrade}");
+                // Remove validation for virtual properties
+                ModelState.Remove("Departement");
+                ModelState.Remove("Grade");
+                ModelState.Remove("FichesAbsence");
 
-                if (ModelState.IsValid)
+                // Log all incoming data
+                Console.WriteLine("Incoming Teacher Data:");
+                foreach (var prop in typeof(T_Enseignant).GetProperties())
                 {
-                    // Debug: Log that the model state is valid
-                    Console.WriteLine("Teacher Create - ModelState is valid.");
-
-                    _context.Enseignants.Add(teacher);
-                    await _context.SaveChangesAsync();
-
-                    // Debug: Log success
-                    Console.WriteLine("Teacher Create - Teacher saved successfully.");
-                    return RedirectToAction(nameof(Index));
+                    Console.WriteLine($"{prop.Name}: {prop.GetValue(teacher)}");
                 }
-                else
+
+                Console.WriteLine($"ModelState.IsValid: {ModelState.IsValid}");
+
+                if (!ModelState.IsValid)
                 {
-                    // Debug: Log validation errors
-                    Console.WriteLine("Teacher Create - ModelState is invalid. Errors:");
-                    foreach (var error in ModelState.Values.SelectMany(v => v.Errors))
+                    Console.WriteLine("ModelState Errors:");
+                    foreach (var modelState in ModelState.Values)
                     {
-                        Console.WriteLine(error.ErrorMessage);
+                        foreach (var error in modelState.Errors)
+                        {
+                            Console.WriteLine($"- {error.ErrorMessage}");
+                        }
+                    }
+
+                    ViewData["Departments"] = await _context.Departements.ToListAsync();
+                    ViewData["Grades"] = await _context.Grades.ToListAsync();
+                    return View(teacher);
+                }
+
+                // Check if teacher with same email exists
+                if (!string.IsNullOrEmpty(teacher.Mail))
+                {
+                    var existingTeacher = await _context.Enseignants
+                        .FirstOrDefaultAsync(t => t.Mail == teacher.Mail);
+
+                    if (existingTeacher != null)
+                    {
+                        Console.WriteLine($"Teacher with email {teacher.Mail} already exists");
+                        ModelState.AddModelError("Mail", "This email is already in use.");
+                        ViewData["Departments"] = await _context.Departements.ToListAsync();
+                        ViewData["Grades"] = await _context.Grades.ToListAsync();
+                        return View(teacher);
                     }
                 }
+
+                Console.WriteLine("Adding teacher to context");
+                _context.Add(teacher);
+
+                Console.WriteLine("Saving changes to database");
+                await _context.SaveChangesAsync();
+
+                Console.WriteLine("Teacher created successfully. Redirecting to Index");
+                return RedirectToAction(nameof(Index));
             }
             catch (Exception ex)
             {
-                // Debug: Log the exception details
-                Console.WriteLine("Teacher Create - Exception occurred:");
-                Console.WriteLine(ex.Message);
-                Console.WriteLine(ex.StackTrace);
-                ModelState.AddModelError("", "Unable to save changes. " + ex.Message);
+                Console.WriteLine($"Exception occurred: {ex.Message}");
+                Console.WriteLine($"Stack trace: {ex.StackTrace}");
+                ModelState.AddModelError("", "An error occurred while saving the teacher.");
+                ViewData["Departments"] = await _context.Departements.ToListAsync();
+                ViewData["Grades"] = await _context.Grades.ToListAsync();
+                return View(teacher);
             }
-
-            // Debug: Log that we're returning to the form
-            Console.WriteLine("Teacher Create - Returning view with the provided teacher data.");
-            ViewData["Departments"] = _context.Departements.ToList();
-            ViewData["Grades"] = _context.Grades.ToList();
-            return View(teacher);
         }
 
 
@@ -100,89 +119,77 @@ namespace Absence.Controllers
         }
 
         [HttpPost]
-        [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("CodeEnseignant,Nom,Prenom,DateRecrutement,Adresse,Mail,Tel,CodeDepartement,CodeGrade")] T_Enseignant teacher)
         {
             try
             {
-                // Debug: Log the incoming model data
-                Console.WriteLine("Teacher Edit - Incoming Data:");
-                Console.WriteLine($"CodeEnseignant: {teacher.CodeEnseignant}");
-                Console.WriteLine($"Nom: {teacher.Nom}");
-                Console.WriteLine($"Prenom: {teacher.Prenom}");
-                Console.WriteLine($"DateRecrutement: {teacher.DateRecrutement}");
-                Console.WriteLine($"Adresse: {teacher.Adresse}");
-                Console.WriteLine($"Mail: {teacher.Mail}");
-                Console.WriteLine($"Tel: {teacher.Tel}");
-                Console.WriteLine($"CodeDepartement: {teacher.CodeDepartement}");
-                Console.WriteLine($"CodeGrade: {teacher.CodeGrade}");
+                Console.WriteLine($"Teacher Edit - Incoming Data for ID: {id}");
+                teacher.CodeEnseignant = id;
 
-                if (id != teacher.CodeEnseignant)
-                {
-                    // Debug: Log ID mismatch
-                    Console.WriteLine($"Teacher Edit - ID mismatch: id = {id}, teacher.CodeEnseignant = {teacher.CodeEnseignant}");
-                    return NotFound();
-                }
+                // Remove validation for virtual properties
+                ModelState.Remove("Departement");
+                ModelState.Remove("Grade");
+                ModelState.Remove("FichesAbsence");
 
                 if (ModelState.IsValid)
                 {
                     try
                     {
-                        // Debug: Log that the model state is valid
-                        Console.WriteLine("Teacher Edit - ModelState is valid.");
-
                         var existingTeacher = await _context.Enseignants.FindAsync(id);
                         if (existingTeacher == null)
                         {
-                            Console.WriteLine($"Teacher Edit - Teacher with ID {id} not found.");
                             return NotFound();
                         }
 
-                        // Update the existing teacher's properties
-                        _context.Entry(existingTeacher).CurrentValues.SetValues(teacher);
-                        await _context.SaveChangesAsync();
+                        // Check if email is already in use by another teacher
+                        if (!string.IsNullOrEmpty(teacher.Mail))
+                        {
+                            var duplicateTeacher = await _context.Enseignants
+                                .FirstOrDefaultAsync(t => t.Mail == teacher.Mail && t.CodeEnseignant != id);
 
-                        // Debug: Log success
-                        Console.WriteLine("Teacher Edit - Teacher updated successfully.");
+                            if (duplicateTeacher != null)
+                            {
+                                ModelState.AddModelError("Mail", "This email is already in use.");
+                                ViewData["Departments"] = await _context.Departements.ToListAsync();
+                                ViewData["Grades"] = await _context.Grades.ToListAsync();
+                                return View(teacher);
+                            }
+                        }
+
+                        // Update existing teacher properties
+                        existingTeacher.Nom = teacher.Nom;
+                        existingTeacher.Prenom = teacher.Prenom;
+                        existingTeacher.DateRecrutement = teacher.DateRecrutement;
+                        existingTeacher.Adresse = teacher.Adresse;
+                        existingTeacher.Mail = teacher.Mail;
+                        existingTeacher.Tel = teacher.Tel;
+                        existingTeacher.CodeDepartement = teacher.CodeDepartement;
+                        existingTeacher.CodeGrade = teacher.CodeGrade;
+
+                        await _context.SaveChangesAsync();
+                        Console.WriteLine("Teacher Edit - Updated successfully");
                         return RedirectToAction(nameof(Index));
                     }
                     catch (DbUpdateConcurrencyException ex)
                     {
-                        // Debug: Log concurrency exception
-                        Console.WriteLine("Teacher Edit - Concurrency exception occurred:");
-                        Console.WriteLine(ex.Message);
+                        Console.WriteLine($"Teacher Edit - Concurrency error: {ex.Message}");
                         if (!_context.Enseignants.Any(e => e.CodeEnseignant == id))
                         {
-                            Console.WriteLine($"Teacher Edit - Teacher with ID {id} no longer exists.");
                             return NotFound();
                         }
                         throw;
                     }
                 }
-                else
-                {
-                    // Debug: Log validation errors
-                    Console.WriteLine("Teacher Edit - ModelState is invalid. Errors:");
-                    foreach (var error in ModelState.Values.SelectMany(v => v.Errors))
-                    {
-                        Console.WriteLine(error.ErrorMessage);
-                    }
-                }
             }
             catch (Exception ex)
             {
-                // Debug: Log the exception details
-                Console.WriteLine("Teacher Edit - Exception occurred:");
-                Console.WriteLine(ex.Message);
-                Console.WriteLine(ex.StackTrace);
-                ModelState.AddModelError("", "Unable to save changes. " + ex.Message);
+                Console.WriteLine($"Teacher Edit - Exception: {ex.Message}");
+                ModelState.AddModelError("", "Error updating teacher: " + ex.Message);
             }
 
-            // Debug: Log that we're returning to the form
-            Console.WriteLine("Teacher Edit - Returning view with the provided teacher data.");
-            ViewData["Departments"] = _context.Departements.ToList();
-            ViewData["Grades"] = _context.Grades.ToList();
+            ViewData["Departments"] = await _context.Departements.ToListAsync();
+            ViewData["Grades"] = await _context.Grades.ToListAsync();
             return View(teacher);
         }
 
