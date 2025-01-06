@@ -30,8 +30,32 @@ namespace Absence.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> MarkAbsence(MarkAbsenceViewModel model)
         {
-            if (ModelState.IsValid)
+            try
             {
+                // Remove validation for virtual properties
+                ModelState.Remove("Classes");
+                ModelState.Remove("Seances");
+
+                // Clear existing errors
+                foreach (var key in ModelState.Keys)
+                {
+                    ModelState[key].Errors.Clear();
+                }
+
+                if (model.Absences == null)
+                {
+                    model.Classes = await _context.Classes.Include(c => c.Etudiants).ToListAsync();
+                    model.Seances = await _context.Seances.ToListAsync();
+                }
+
+                if (!ModelState.IsValid)
+                {
+                    model.Classes = await _context.Classes.Include(c => c.Etudiants).ToListAsync();
+                    model.Seances = await _context.Seances.ToListAsync();
+                    return View(model);
+                }
+
+                // Adding absence records
                 foreach (var absence in model.Absences)
                 {
                     if (absence.IsAbsent)
@@ -41,19 +65,24 @@ namespace Absence.Controllers
                             CodeFicheAbsence = absence.FicheAbsenceId,
                             CodeEtudiant = absence.StudentId
                         };
-
                         _context.LignesFicheAbsence.Add(ligneFicheAbsence);
                     }
                 }
 
                 await _context.SaveChangesAsync();
+
                 return RedirectToAction(nameof(MarkAbsence));
             }
-
-            model.Classes = await _context.Classes.Include(c => c.Etudiants).ToListAsync();
-            model.Seances = await _context.Seances.ToListAsync();
-            return View(model);
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", "An error occurred while saving the absence records.");
+                model.Classes = await _context.Classes.Include(c => c.Etudiants).ToListAsync();
+                model.Seances = await _context.Seances.ToListAsync();
+                return View(model);
+            }
         }
+
+
 
         public async Task<IActionResult> AbsenceReport(DateTime? startDate, DateTime? endDate)
         {
