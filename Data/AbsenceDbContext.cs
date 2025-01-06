@@ -18,6 +18,7 @@ namespace Absence.Data
         public DbSet<T_LigneFicheAbsence> LignesFicheAbsence { get; set; }
         public DbSet<T_Matiere> Matieres { get; set; }
         public DbSet<T_Seance> Seances { get; set; }
+        public DbSet<T_User> Users { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -74,6 +75,18 @@ namespace Absence.Data
                 .HasMany(c => c.Etudiants)
                 .WithOne(e => e.Classe)
                 .HasForeignKey(e => e.CodeClasse);
+            modelBuilder.Entity<T_User>().HasData(
+         new T_User
+         {
+             UserId = 1,
+             Email = "admin@gmail.com",
+             Password = "admin",
+             UserType = "Admin"
+         }
+     );
+
+
         }
+
     }
 }

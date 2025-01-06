@@ -51,6 +51,7 @@
             }
 
         [HttpPost]
+        [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Nom,Prenom,DateNaissance,CodeClasse,NumInscription,Adresse,Mail,Tel")] T_Etudiant student)
         {
@@ -104,7 +105,23 @@
                 Console.WriteLine("Saving changes to database");
                 await _context.SaveChangesAsync();
 
-                Console.WriteLine("Student created successfully. Redirecting to Index");
+                // New Code: Create a user account for the student
+                Console.WriteLine("Creating user account for the student");
+                var user = new T_User
+                {
+                    Email = student.Mail,
+                    Password = student.NumInscription, // Using registration number as default password
+                    UserType = "Student",
+                    StudentId = student.CodeEtudiant // Assuming CodeEtudiant is generated after SaveChanges
+                };
+
+                Console.WriteLine("Adding user account to context");
+                _context.Users.Add(user);
+
+                Console.WriteLine("Saving changes to database for user account");
+                await _context.SaveChangesAsync();
+
+                Console.WriteLine("Student and user account created successfully. Redirecting to Index");
                 return RedirectToAction(nameof(Index));
             }
             catch (Exception ex)
@@ -116,6 +133,7 @@
                 return View(student);
             }
         }
+
 
         public async Task<IActionResult> Edit(int? id)
             {

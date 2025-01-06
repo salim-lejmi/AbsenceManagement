@@ -31,6 +31,7 @@ namespace Absence.Controllers
         }
 
         [HttpPost]
+        [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Nom,Prenom,DateRecrutement,Adresse,Mail,Tel,CodeDepartement,CodeGrade")] T_Enseignant teacher)
         {
@@ -68,7 +69,7 @@ namespace Absence.Controllers
                     return View(teacher);
                 }
 
-                // Check if teacher with same email exists
+                // Check if teacher with the same email exists
                 if (!string.IsNullOrEmpty(teacher.Mail))
                 {
                     var existingTeacher = await _context.Enseignants
@@ -90,7 +91,23 @@ namespace Absence.Controllers
                 Console.WriteLine("Saving changes to database");
                 await _context.SaveChangesAsync();
 
-                Console.WriteLine("Teacher created successfully. Redirecting to Index");
+                // New Code: Create a user account for the teacher
+                Console.WriteLine("Creating user account for the teacher");
+                var user = new T_User
+                {
+                    Email = teacher.Mail,
+                    Password = teacher.Tel, // Using phone number as default password
+                    UserType = "Teacher",
+                    TeacherId = teacher.CodeEnseignant // Assuming CodeEnseignant is generated after SaveChanges
+                };
+
+                Console.WriteLine("Adding user account to context");
+                _context.Users.Add(user);
+
+                Console.WriteLine("Saving changes to database for user account");
+                await _context.SaveChangesAsync();
+
+                Console.WriteLine("Teacher and user account created successfully. Redirecting to Index");
                 return RedirectToAction(nameof(Index));
             }
             catch (Exception ex)

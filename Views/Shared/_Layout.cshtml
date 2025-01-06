@@ -1,4 +1,7 @@
-﻿<!DOCTYPE html>
+﻿@using Microsoft.AspNetCore.Http
+
+<!DOCTYPE html>
+
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -17,19 +20,36 @@
                 </button>
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-controller="Students" asp-action="Index">Students</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-controller="Teachers" asp-action="Index">Teachers</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-controller="Subjects" asp-action="Index">Subjects</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-controller="Absences" asp-action="MarkAbsence">Mark Absences</a>
-                        </li>
+                        @if (Context.Session.GetString("UserType") == "Admin")
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="Students" asp-action="Index">Students</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="Teachers" asp-action="Index">Teachers</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="Subjects" asp-action="Index">Subjects</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="Absences" asp-action="MarkAbsence">Mark Absences</a>
+                            </li>
+                        }
+                        else if (Context.Session.GetString("UserType") == "Teacher")
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="Absences" asp-action="MarkAbsence">Mark Absences</a>
+                            </li>
+                        }
                     </ul>
+                    @if (Context.Session.GetString("UserType") != null)
+                    {
+                        <ul class="navbar-nav">
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="Auth" asp-action="Logout">Logout</a>
+                            </li>
+                        </ul>
+                    }
                 </div>
             </div>
         </nav>
