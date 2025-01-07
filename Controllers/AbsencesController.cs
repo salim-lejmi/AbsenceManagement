@@ -3,6 +3,7 @@ using Absence.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Absence.Data;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace Absence.Controllers
 {
@@ -157,7 +158,7 @@ public async Task<IActionResult> MarkAbsence()
         }
 
         // GET: Absence Report
-        public async Task<IActionResult> AbsenceReport(DateTime? startDate, DateTime? endDate)
+        public async Task<IActionResult> AbsenceReport(DateTime? startDate, DateTime? endDate, int? classeId, int? studentId)
         {
             var teacherId = HttpContext.Session.GetInt32("TeacherId");
             if (teacherId == null)
@@ -165,50 +166,82 @@ public async Task<IActionResult> MarkAbsence()
                 return Unauthorized();
             }
 
-            if (!startDate.HasValue || !endDate.HasValue)
+            // Base query
+            var query = _context.LignesFicheAbsence
+                .Include(lfa => lfa.Etudiant)
+                    .ThenInclude(e => e.Classe)
+                .Include(lfa => lfa.FicheAbsence)
+                .AsQueryable();
+
+            // Apply filters based on provided parameters
+            if (startDate.HasValue)
             {
-                return View(new List<StudentAbsenceReportViewModel>());
+                query = query.Where(lfa => lfa.FicheAbsence.DateJour >= startDate.Value);
             }
 
-            // Ensure endDate includes the full day
-            var adjustedEndDate = endDate.Value.AddDays(1).AddSeconds(-1);
+            if (endDate.HasValue)
+            {
+                var adjustedEndDate = endDate.Value.AddDays(1).AddSeconds(-1);
+                query = query.Where(lfa => lfa.FicheAbsence.DateJour <= adjustedEndDate);
+            }
 
-            var absences = await _context.LignesFicheAbsence
-                .Include(lfa => lfa.Etudiant)
-                .Include(lfa => lfa.FicheAbsence)
-                .Where(lfa => lfa.FicheAbsence.DateJour >= startDate.Value
-                    && lfa.FicheAbsence.DateJour <= adjustedEndDate
-                    && lfa.FicheAbsence.CodeEnseignant == teacherId)
-                .ToListAsync();
+            if (classeId.HasValue)
+            {
+                query = query.Where(lfa => lfa.Etudiant.CodeClasse == classeId.Value);
+            }
+
+            if (studentId.HasValue)
+            {
+                query = query.Where(lfa => lfa.CodeEtudiant == studentId.Value);
+            }
+
+            var absences = await query.ToListAsync();
 
             var viewModel = absences
-                .GroupBy(a => new { a.Etudiant.CodeEtudiant, a.Etudiant.Nom, a.Etudiant.Prenom })
+                .GroupBy(a => new { a.Etudiant.CodeEtudiant, a.Etudiant.Nom, a.Etudiant.Prenom, a.Etudiant.Classe.NomClasse })
                 .Select(group => new StudentAbsenceReportViewModel
                 {
                     StudentId = group.Key.CodeEtudiant,
                     StudentName = $"{group.Key.Nom} {group.Key.Prenom}",
+                    ClassName = group.Key.NomClasse,
                     AbsenceCount = group.Count()
                 })
                 .OrderByDescending(vm => vm.AbsenceCount)
                 .ToList();
 
+            // Populate ViewBag with data for dropdowns
+            ViewBag.Classes = await _context.Classes
+                .Select(c => new SelectListItem { Value = c.CodeClasse.ToString(), Text = c.NomClasse })
+                .ToListAsync();
+
+            ViewBag.Students = await _context.Etudiants
+                .Select(e => new SelectListItem { Value = e.CodeEtudiant.ToString(), Text = $"{e.Nom} {e.Prenom}" })
+                .ToListAsync();
+
             ViewBag.StartDate = startDate?.ToString("yyyy-MM-dd");
             ViewBag.EndDate = endDate?.ToString("yyyy-MM-dd");
+            ViewBag.SelectedClassId = classeId;
+            ViewBag.SelectedStudentId = studentId;
 
             return View(viewModel);
         }
 
+
         // GET: Absence Details
-        public async Task<IActionResult> AbsenceDetails(int studentId, int? subjectId)
+        public async Task<IActionResult> SubjectAbsenceDetails(int? studentId, int? matiereId)
         {
-            var teacherId = HttpContext.Session.GetInt32("TeacherId");
-            if (teacherId == null)
+            if (!studentId.HasValue || !matiereId.HasValue)
             {
-                return Unauthorized();
+                // Populate dropdowns and return empty view
+                await PopulateDropdowns();
+                return View(new SubjectAbsenceDetailsViewModel
+                {
+                    AbsenceDetails = new List<AbsenceDetailsViewModel>(),
+                    TotalAbsences = 0
+                });
             }
 
-            var query = _context.LignesFicheAbsence
-                .Include(lfa => lfa.Etudiant)
+            var absences = await _context.LignesFicheAbsence
                 .Include(lfa => lfa.FicheAbsence)
                     .ThenInclude(fa => fa.Matiere)
                 .Include(lfa => lfa.FicheAbsence)
@@ -216,40 +249,57 @@ public async Task<IActionResult> MarkAbsence()
                 .Include(lfa => lfa.FicheAbsence)
                     .ThenInclude(fa => fa.FichesAbsenceSeances)
                         .ThenInclude(fas => fas.Seance)
-                .Where(lfa => lfa.CodeEtudiant == studentId);
-
-            if (subjectId.HasValue)
-            {
-                query = query.Where(lfa => lfa.FicheAbsence.CodeMatiere == subjectId.Value);
-            }
-
-            var absences = await query
+                .Where(lfa => lfa.CodeEtudiant == studentId &&
+                             lfa.FicheAbsence.CodeMatiere == matiereId)
                 .OrderByDescending(lfa => lfa.FicheAbsence.DateJour)
                 .ToListAsync();
 
             var student = await _context.Etudiants
                 .FirstOrDefaultAsync(e => e.CodeEtudiant == studentId);
 
-            ViewBag.StudentName = student != null
-                ? $"{student.Nom} {student.Prenom}"
-                : "Unknown Student";
+            var matiere = await _context.Matieres
+                .FirstOrDefaultAsync(m => m.CodeMatiere == matiereId);
 
-            ViewBag.Subjects = await _context.Matieres
-                .Select(m => new { m.CodeMatiere, m.NomMatiere })
-                .ToListAsync();
-
-            ViewBag.SelectedSubjectId = subjectId;
-
-            var viewModel = absences.Select(a => new AbsenceDetailsViewModel
+            var viewModel = new SubjectAbsenceDetailsViewModel
             {
-                Date = a.FicheAbsence.DateJour,
-                SeanceName = a.FicheAbsence.FichesAbsenceSeances
-                    .FirstOrDefault()?.Seance?.NomSeance ?? "N/A",
-                TeacherName = $"{a.FicheAbsence.Enseignant.Nom} {a.FicheAbsence.Enseignant.Prenom}",
-                SubjectName = a.FicheAbsence.Matiere.NomMatiere
-            }).ToList();
+                StudentName = student != null ? $"{student.Nom} {student.Prenom}" : "Unknown Student",
+                SubjectName = matiere?.NomMatiere ?? "Unknown Subject",
+                TotalAbsences = absences.Count,
+                AbsenceDetails = absences.Select(a => new AbsenceDetailsViewModel
+                {
+                    Date = a.FicheAbsence.DateJour,
+                    SeanceName = a.FicheAbsence.FichesAbsenceSeances
+                        .FirstOrDefault()?.Seance?.NomSeance ?? "N/A",
+                    TeacherName = $"{a.FicheAbsence.Enseignant.Nom} {a.FicheAbsence.Enseignant.Prenom}",
+                    SubjectName = a.FicheAbsence.Matiere.NomMatiere
+                }).ToList()
+            };
+
+            await PopulateDropdowns();
+            ViewBag.SelectedStudentId = studentId;
+            ViewBag.SelectedMatiereId = matiereId;
 
             return View(viewModel);
         }
+
+        private async Task PopulateDropdowns()
+        {
+            ViewBag.Students = await _context.Etudiants
+                .Select(e => new SelectListItem
+                {
+                    Value = e.CodeEtudiant.ToString(),
+                    Text = $"{e.Nom} {e.Prenom}"
+                })
+                .ToListAsync();
+
+            ViewBag.Matieres = await _context.Matieres
+                .Select(m => new SelectListItem
+                {
+                    Value = m.CodeMatiere.ToString(),
+                    Text = m.NomMatiere
+                })
+                .ToListAsync();
+        }
     }
+
 }

@@ -1,0 +1,93 @@
+﻿@model Absence.ViewModels.SubjectAbsenceDetailsViewModel
+
+<div class="container mt-4">
+    <h2>Subject-Specific Absence Details</h2>
+    <form asp-action="SubjectAbsenceDetails" method="get" class="mb-4">
+        <div class="row">
+            <div class="col-md-5">
+                <div class="form-group">
+                    <label for="studentId">Student</label>
+                    <select name="studentId" id="studentId" class="form-control" required>
+                        <option value="">-- Select Student --</option>
+                        @foreach (var student in ViewBag.Students)
+                        {
+                            @if (ViewBag.SelectedStudentId != null && ViewBag.SelectedStudentId.ToString() == student.Value)
+                            {
+                                <option value="@student.Value" selected>@student.Text</option>
+                            }
+                            else
+                            {
+                                <option value="@student.Value">@student.Text</option>
+                            }
+                        }
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-5">
+                <div class="form-group">
+                    <label for="matiereId">Subject</label>
+                    <select name="matiereId" id="matiereId" class="form-control" required>
+                        <option value="">-- Select Subject --</option>
+                        @foreach (var matiere in ViewBag.Matieres)
+                        {
+                            @if (ViewBag.SelectedMatiereId != null && ViewBag.SelectedMatiereId.ToString() == matiere.Value)
+                            {
+                                <option value="@matiere.Value" selected>@matiere.Text</option>
+                            }
+                            else
+                            {
+                                <option value="@matiere.Value">@matiere.Text</option>
+                            }
+                        }
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-primary mt-4">View Details</button>
+            </div>
+        </div>
+    </form>
+
+    @if (!string.IsNullOrEmpty(Model.StudentName))
+    {
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5>Summary</h5>
+                <p><strong>Student:</strong> @Model.StudentName</p>
+                <p><strong>Subject:</strong> @Model.SubjectName</p>
+                <p><strong>Total Absences:</strong> @Model.TotalAbsences</p>
+            </div>
+        </div>
+
+        @if (Model.AbsenceDetails.Any())
+        {
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Seance</th>
+                            <th>Teacher</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var detail in Model.AbsenceDetails)
+                        {
+                            <tr>
+                                <td>@detail.Date.ToShortDateString()</td>
+                                <td>@detail.SeanceName</td>
+                                <td>@detail.TeacherName</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <div class="alert alert-info">
+                No absences found for this student in this subject.
+            </div>
+        }
+    }
+</div>

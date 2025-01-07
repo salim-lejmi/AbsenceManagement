@@ -1,61 +1,102 @@
-﻿        @model List<Absence.ViewModels.StudentAbsenceReportViewModel>
+﻿@model List<Absence.ViewModels.StudentAbsenceReportViewModel>
 
-        <div class="container mt-4">
-            <h2>Absence Report</h2>
-
-            <form asp-action="AbsenceReport" method="get" class="mb-4">
-                <div class="row">
-                    <div class="col-md-4">
-                        <div class="form-group">
-                            <label for="startDate">Start Date</label>
-                            <input type="date" name="startDate" id="startDate" class="form-control" required
-                                   value="@(Context.Request.Query["startDate"].ToString())" />
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="form-group">
-                            <label for="endDate">End Date</label>
-                            <input type="date" name="endDate" id="endDate" class="form-control" required
-                                   value="@(Context.Request.Query["endDate"].ToString())" />
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <button type="submit" class="btn btn-primary mt-4">Generate Report</button>
-                    </div>
+<div class="container mt-4">
+    <h2>Absence Report</h2>
+    <form asp-action="AbsenceReport" method="get" class="mb-4">
+        <div class="row">
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label for="startDate">Start Date</label>
+                    <input type="date" name="startDate" id="startDate" class="form-control"
+                           value="@ViewBag.StartDate" />
                 </div>
-            </form>
-
-            @if (Model != null && Model.Any())
-            {
-                <div class="table-responsive">
-                    <table class="table table-striped">
-                        <thead>
-                            <tr>
-                                <th>Student</th>
-                                <th>Number of Absences</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var report in Model)
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label for="endDate">End Date</label>
+                    <input type="date" name="endDate" id="endDate" class="form-control"
+                           value="@ViewBag.EndDate" />
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label for="classeId">Class</label>
+                    <select name="classeId" id="classeId" class="form-control">
+                        <option value="">-- Select Class --</option>
+                        @foreach (var classe in ViewBag.Classes)
+                        {
+                            @if (ViewBag.SelectedClassId != null && ViewBag.SelectedClassId.ToString() == classe.Value)
                             {
-                                <tr>
-                                    <td>@report.StudentName</td>
-                                    <td>@report.AbsenceCount</td>
-                                    <td>
-                                        <a href="@Url.Action("AbsenceDetails", new { studentId = report.StudentId, subjectId = ViewBag.SubjectId })"
-                                           class="btn btn-info btn-sm">View Details</a>
-                                    </td>
-                                </tr>
+                                <option value="@classe.Value" selected>@classe.Text</option>
                             }
-                        </tbody>
-                    </table>
+                            else
+                            {
+                                <option value="@classe.Value">@classe.Text</option>
+                            }
+                        }
+                    </select>
                 </div>
-            }
-            else if (Context.Request.Query.Count > 0)
-            {
-                <div class="alert alert-info">
-                    No absences found for the selected date range.
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label for="studentId">Student</label>
+                    <select name="studentId" id="studentId" class="form-control">
+                        <option value="">-- Select Student --</option>
+                        @foreach (var student in ViewBag.Students)
+                        {
+                            @if (ViewBag.SelectedStudentId != null && ViewBag.SelectedStudentId.ToString() == student.Value)
+                            {
+                                <option value="@student.Value" selected>@student.Text</option>
+                            }
+                            else
+                            {
+                                <option value="@student.Value">@student.Text</option>
+                            }
+                        }
+                    </select>
                 </div>
-            }
+            </div>
         </div>
+        <div class="row mt-3">
+            <div class="col">
+                <button type="submit" class="btn btn-primary">Generate Report</button>
+            </div>
+        </div>
+    </form>
+
+    @if (Model != null && Model.Any())
+    {
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Student</th>
+                        <th>Class</th>
+                        <th>Number of Absences</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var report in Model)
+                    {
+                        <tr>
+                            <td>@report.StudentName</td>
+                            <td>@report.ClassName</td>
+                            <td>@report.AbsenceCount</td>
+                            <td>
+                                <a href="@Url.Action("AbsenceDetails", new { studentId = report.StudentId })"
+                                   class="btn btn-info btn-sm">View Details</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+    else if (Context.Request.Query.Count > 0)
+    {
+        <div class="alert alert-info">
+            No absences found for the selected criteria.
+        </div>
+    }
+</div>
