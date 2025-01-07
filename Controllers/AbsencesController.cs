@@ -16,7 +16,7 @@ namespace Absence.Controllers
         }
 
         // GET: MarkAbsence
-        public async Task<IActionResult> MarkAbsence()
+public async Task<IActionResult> MarkAbsence()
         {
             var teacherId = HttpContext.Session.GetInt32("TeacherId");
             if (teacherId == null)
@@ -24,7 +24,6 @@ namespace Absence.Controllers
                 return Unauthorized();
             }
 
-            // Get classes with students and create the initial view model
             var classes = await _context.Classes.Include(c => c.Etudiants).ToListAsync();
             var students = classes.SelectMany(c => c.Etudiants).ToList();
 
@@ -32,6 +31,7 @@ namespace Absence.Controllers
             {
                 Classes = classes,
                 Matieres = await _context.Matieres.ToListAsync(),
+                Seances = await _context.Seances.ToListAsync(),  // Add this
                 Date = DateTime.Now,
                 Absences = students.Select(s => new StudentAbsence
                 {
@@ -42,6 +42,7 @@ namespace Absence.Controllers
 
             return View(viewModel);
         }
+
 
         // POST: MarkAbsence
         [HttpPost]
@@ -54,11 +55,12 @@ namespace Absence.Controllers
                 return Unauthorized();
             }
 
-            if (model.SelectedClassId == 0 || model.SelectedSubjectId == 0)
+            if (model.SelectedClassId == 0 || model.SelectedSubjectId == 0 || model.SelectedSeanceId == 0)
             {
-                ModelState.AddModelError("", "Please select both a class and a subject.");
+                ModelState.AddModelError("", "Please select a class, subject, and seance.");
                 model.Classes = await _context.Classes.Include(c => c.Etudiants).ToListAsync();
                 model.Matieres = await _context.Matieres.ToListAsync();
+                model.Seances = await _context.Seances.ToListAsync();
                 return View(model);
             }
 
@@ -76,6 +78,16 @@ namespace Absence.Controllers
                     };
 
                     _context.FichesAbsence.Add(ficheAbsence);
+                    await _context.SaveChangesAsync();
+
+                    // Create the FicheAbsenceSeance record
+                    var ficheAbsenceSeance = new T_FicheAbsenceSeance
+                    {
+                        CodeFicheAbsence = ficheAbsence.CodeFicheAbsence,
+                        CodeSeance = model.SelectedSeanceId
+                    };
+
+                    _context.FicheAbsenceSeances.Add(ficheAbsenceSeance);
                     await _context.SaveChangesAsync();
 
                     // Add individual student absences
@@ -105,6 +117,7 @@ namespace Absence.Controllers
                     ModelState.AddModelError("", "An error occurred while saving the absence records. Please try again.");
                     model.Classes = await _context.Classes.Include(c => c.Etudiants).ToListAsync();
                     model.Matieres = await _context.Matieres.ToListAsync();
+                    model.Seances = await _context.Seances.ToListAsync();
                     return View(model);
                 }
             }

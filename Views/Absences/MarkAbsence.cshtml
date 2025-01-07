@@ -25,7 +25,14 @@
             <option value="">-- Select Subject --</option>
         </select>
     </div>
-
+    <div class="form-group">
+        <label>Select Seance</label>
+        <select asp-for="SelectedSeanceId"
+                asp-items="@(new SelectList(Model.Seances, "CodeSeance", "NomSeance"))"
+                class="form-control">
+            <option value="">-- Select Seance --</option>
+        </select>
+    </div>
     <table class="table">
         <thead>
             <tr>
