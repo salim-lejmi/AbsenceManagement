@@ -3,26 +3,30 @@
 <h2>Mark Absences</h2>
 
 <form asp-action="MarkAbsence" method="post">
-    <div>
-        <h4>Date</h4>
+    <div class="form-group">
+        <label>Date</label>
         <input type="date" asp-for="Date" class="form-control" />
     </div>
 
-    <div>
-        <h4>Select Class</h4>
-        <select asp-for="SelectedClassId" asp-items="@(new SelectList(Model.Classes, "CodeClasse", "NomClasse"))" class="form-control">
+    <div class="form-group">
+        <label>Select Class</label>
+        <select asp-for="SelectedClassId"
+                asp-items="@(new SelectList(Model.Classes, "CodeClasse", "NomClasse"))"
+                class="form-control">
             <option value="">-- Select Class --</option>
         </select>
     </div>
 
-    <div>
-        <h4>Select Subject</h4>
-        <select asp-for="SelectedSubjectId" asp-items="@(new SelectList(Model.Matieres, "CodeMatiere", "NomMatiere"))" class="form-control">
+    <div class="form-group">
+        <label>Select Subject</label>
+        <select asp-for="SelectedSubjectId"
+                asp-items="@(new SelectList(Model.Matieres, "CodeMatiere", "NomMatiere"))"
+                class="form-control">
             <option value="">-- Select Subject --</option>
         </select>
     </div>
 
-    <table>
+    <table class="table">
         <thead>
             <tr>
                 <th>Student</th>
@@ -30,18 +34,18 @@
             </tr>
         </thead>
         <tbody>
-            @foreach (var student in Model.Classes.SelectMany(c => c.Etudiants))
+            @for (int i = 0; i < Model.Absences.Count; i++)
             {
                 <tr>
-                    <td>@student.Nom</td>
+                    <td>@Model.Classes.SelectMany(c => c.Etudiants).ElementAt(i).Nom</td>
                     <td>
-                        <input type="checkbox" name="Absences[@student.CodeEtudiant].IsAbsent" />
-                        <input type="hidden" name="Absences[@student.CodeEtudiant].StudentId" value="@student.CodeEtudiant" />
+                        <input type="hidden" asp-for="@Model.Absences[i].StudentId" />
+                        <input type="checkbox" asp-for="@Model.Absences[i].IsAbsent" />
                     </td>
                 </tr>
             }
         </tbody>
     </table>
 
-    <button type="submit">Submit</button>
+    <button type="submit" class="btn btn-primary">Submit</button>
 </form>
