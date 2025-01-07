@@ -1,21 +1,42 @@
 ﻿@model List<Absence.ViewModels.AbsenceDetailsViewModel>
 
-<h2>Absence Details</h2>
+<div class="container mt-4">
+    <h2>Absence Details for @ViewBag.StudentName</h2>
 
-<table>
-    <thead>
-        <tr>
-            <th>Date</th>
-            <th>Seance</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var detail in Model)
-        {
-            <tr>
-                <td>@detail.Date.ToShortDateString()</td>
-                <td>@detail.SeanceName</td>
-            </tr>
-        }
-    </tbody>
-</table>
+    @if (Model != null && Model.Any())
+    {
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Seance</th>
+                        <th>Teacher</th>
+                        <th>Subject</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var detail in Model)
+                    {
+                        <tr>
+                            <td>@detail.Date.ToShortDateString()</td>
+                            <td>@detail.SeanceName</td>
+                            <td>@detail.TeacherName</td>
+                            <td>@detail.SubjectName</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-info">
+            No absences found for this student.
+        </div>
+    }
+
+    <div class="mt-3">
+        <a href="@Url.Action("AbsenceReport")" class="btn btn-secondary">Back to Report</a>
+    </div>
+</div>

@@ -16,6 +16,7 @@ namespace Absence.Controllers
             _context = context;
         }
 
+
         // GET: MarkAbsence
 public async Task<IActionResult> MarkAbsence()
         {
@@ -227,6 +228,46 @@ public async Task<IActionResult> MarkAbsence()
         }
 
 
+        public async Task<IActionResult> AbsenceDetails(int studentId)
+        {
+            var teacherId = HttpContext.Session.GetInt32("TeacherId");
+            if (teacherId == null)
+            {
+                return Unauthorized();
+            }
+
+            var absences = await _context.LignesFicheAbsence
+                .Include(lfa => lfa.FicheAbsence)
+                    .ThenInclude(fa => fa.Matiere)
+                .Include(lfa => lfa.FicheAbsence)
+                    .ThenInclude(fa => fa.Enseignant)
+                .Include(lfa => lfa.FicheAbsence)
+                    .ThenInclude(fa => fa.FichesAbsenceSeances)
+                        .ThenInclude(fas => fas.Seance)
+                .Where(lfa => lfa.CodeEtudiant == studentId)
+                .OrderByDescending(lfa => lfa.FicheAbsence.DateJour)
+                .ToListAsync();
+
+            var student = await _context.Etudiants
+                .FirstOrDefaultAsync(e => e.CodeEtudiant == studentId);
+
+            ViewBag.StudentName = student != null
+                ? $"{student.Nom} {student.Prenom}"
+                : "Unknown Student";
+
+            var viewModel = absences.Select(a => new AbsenceDetailsViewModel
+            {
+                Date = a.FicheAbsence.DateJour,
+                SeanceName = a.FicheAbsence.FichesAbsenceSeances
+                    .FirstOrDefault()?.Seance?.NomSeance ?? "N/A",
+                TeacherName = $"{a.FicheAbsence.Enseignant.Nom} {a.FicheAbsence.Enseignant.Prenom}",
+                SubjectName = a.FicheAbsence.Matiere.NomMatiere
+            }).ToList();
+
+            return View(viewModel);
+        }
+
+
         // GET: Absence Details
         public async Task<IActionResult> SubjectAbsenceDetails(int? studentId, int? matiereId)
         {
@@ -301,5 +342,7 @@ public async Task<IActionResult> MarkAbsence()
                 .ToListAsync();
         }
     }
+
+
 
 }

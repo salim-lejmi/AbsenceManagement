@@ -1,22 +1,33 @@
 ﻿@model Absence.ViewModels.MarkAbsenceViewModel
 
 <h2>Mark Absences</h2>
-
 <form asp-action="MarkAbsence" method="post">
     <div class="form-group">
         <label>Date</label>
         <input type="date" asp-for="Date" class="form-control" />
     </div>
-
     <div class="form-group">
         <label>Select Class</label>
-        <select asp-for="SelectedClassId"
-                asp-items="@(new SelectList(Model.Classes, "CodeClasse", "NomClasse"))"
-                class="form-control">
-            <option value="">-- Select Class --</option>
+        <select id="classDisplay" class="form-control" disabled>
+            <option value="">Class will be selected automatically</option>
+        </select>
+        <input type="hidden" asp-for="SelectedClassId" id="hiddenClassId" />
+    </div>
+    <div class="form-group">
+        <label>Select Student</label>
+        <select id="studentSelect" class="form-control" onchange="updateClassInfo()">
+            <option value="">-- Select Student --</option>
+            @foreach (var classe in Model.Classes)
+            {
+                foreach (var student in classe.Etudiants)
+                {
+                    <option value="@student.CodeEtudiant" data-class-id="@classe.CodeClasse" data-class-name="@classe.NomClasse">
+                        @student.Nom @student.Prenom
+                    </option>
+                }
+            }
         </select>
     </div>
-
     <div class="form-group">
         <label>Select Subject</label>
         <select asp-for="SelectedSubjectId"
@@ -33,26 +44,27 @@
             <option value="">-- Select Seance --</option>
         </select>
     </div>
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Student</th>
-                <th>Absent?</th>
-            </tr>
-        </thead>
-        <tbody>
-            @for (int i = 0; i < Model.Absences.Count; i++)
-            {
-                <tr>
-                    <td>@Model.Classes.SelectMany(c => c.Etudiants).ElementAt(i).Nom</td>
-                    <td>
-                        <input type="hidden" asp-for="@Model.Absences[i].StudentId" />
-                        <input type="checkbox" asp-for="@Model.Absences[i].IsAbsent" />
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
-
     <button type="submit" class="btn btn-primary">Submit</button>
 </form>
+
+@section Scripts {
+    <script>
+        function updateClassInfo() {
+            const studentSelect = document.getElementById('studentSelect');
+            const selectedOption = studentSelect.options[studentSelect.selectedIndex];
+            const classDisplay = document.getElementById('classDisplay');
+            const hiddenClassId = document.getElementById('hiddenClassId');
+
+            if (selectedOption.value) {
+                const classId = selectedOption.getAttribute('data-class-id');
+                const className = selectedOption.getAttribute('data-class-name');
+
+                classDisplay.innerHTML = `<option value="${classId}">${className}</option>`;
+                hiddenClassId.value = classId;
+            } else {
+                classDisplay.innerHTML = '<option value="">Class will be selected automatically</option>';
+                hiddenClassId.value = '';
+            }
+        }
+    </script>
+}

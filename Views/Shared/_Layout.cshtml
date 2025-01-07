@@ -41,7 +41,7 @@
                                 <a class="nav-link text-dark" asp-controller="Absences" asp-action="AbsenceReport">Absence Report</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-controller="Absences" asp-action="AbsenceDetails">Detailed Absences</a>
+                                <a class="nav-link" asp-controller="Absences" asp-action="SubjectAbsenceDetails">Subject-Specific Absences</a>
                             </li>
                         }
                         else if (Context.Session.GetString("UserType") == "Student")
