@@ -15,75 +15,131 @@ namespace Absence.Controllers
             _context = context;
         }
 
+        // GET: MarkAbsence
         public async Task<IActionResult> MarkAbsence()
         {
+            var teacherId = HttpContext.Session.GetInt32("TeacherId");
+            if (teacherId == null)
+            {
+                return Unauthorized();
+            }
+
             var viewModel = new MarkAbsenceViewModel
             {
                 Classes = await _context.Classes.Include(c => c.Etudiants).ToListAsync(),
-                Seances = await _context.Seances.ToListAsync()
+                Matieres = await _context.Matieres.ToListAsync(), // Changed from Seances to Matieres
+                Date = DateTime.Now
             };
 
             return View(viewModel);
         }
 
+        // POST: MarkAbsence
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> MarkAbsence(MarkAbsenceViewModel model)
+        public async Task<IActionResult> MarkAbsence([Bind("Date,SelectedClassId,SelectedSubjectId,Absences")] MarkAbsenceViewModel model)
         {
+            var teacherId = HttpContext.Session.GetInt32("TeacherId");
+            if (teacherId == null)
+            {
+                return Unauthorized();
+            }
+
             try
             {
-                // Remove validation for virtual properties
+                // Remove validation for navigation properties
                 ModelState.Remove("Classes");
-                ModelState.Remove("Seances");
+                ModelState.Remove("Matieres");
 
-                // Clear existing errors
-                foreach (var key in ModelState.Keys)
+                // Validate that required fields are selected
+                if (model.SelectedClassId == 0)
                 {
-                    ModelState[key].Errors.Clear();
+                    ModelState.AddModelError("SelectedClassId", "Please select a class");
                 }
-
-                if (model.Absences == null)
+                if (model.SelectedSubjectId == 0)
                 {
-                    model.Classes = await _context.Classes.Include(c => c.Etudiants).ToListAsync();
-                    model.Seances = await _context.Seances.ToListAsync();
+                    ModelState.AddModelError("SelectedSubjectId", "Please select a subject");
                 }
 
                 if (!ModelState.IsValid)
                 {
+                    // Reload the required data
                     model.Classes = await _context.Classes.Include(c => c.Etudiants).ToListAsync();
-                    model.Seances = await _context.Seances.ToListAsync();
+                    model.Matieres = await _context.Matieres.ToListAsync();
                     return View(model);
                 }
 
-                // Adding absence records
-                foreach (var absence in model.Absences)
+                var ficheAbsence = new T_FicheAbsence
                 {
-                    if (absence.IsAbsent)
+                    DateJour = model.Date,
+                    CodeClasse = model.SelectedClassId,
+                    CodeMatiere = model.SelectedSubjectId,
+                    CodeEnseignant = teacherId.Value
+                };
+
+                _context.FichesAbsence.Add(ficheAbsence);
+                await _context.SaveChangesAsync();
+
+                // Process absences only if there are any
+                if (model.Absences != null && model.Absences.Any())
+                {
+                    foreach (var absence in model.Absences.Where(a => a.IsAbsent))
                     {
                         var ligneFicheAbsence = new T_LigneFicheAbsence
                         {
-                            CodeFicheAbsence = absence.FicheAbsenceId,
+                            CodeFicheAbsence = ficheAbsence.CodeFicheAbsence,
                             CodeEtudiant = absence.StudentId
                         };
+
                         _context.LignesFicheAbsence.Add(ligneFicheAbsence);
                     }
-                }
 
-                await _context.SaveChangesAsync();
+                    await _context.SaveChangesAsync();
+                }
 
                 return RedirectToAction(nameof(MarkAbsence));
             }
-            catch (Exception ex)
+            catch
             {
                 ModelState.AddModelError("", "An error occurred while saving the absence records.");
+
+                // Reload the required data
                 model.Classes = await _context.Classes.Include(c => c.Etudiants).ToListAsync();
-                model.Seances = await _context.Seances.ToListAsync();
+                model.Matieres = await _context.Matieres.ToListAsync();
                 return View(model);
             }
         }
 
 
 
+
+        // GET: Student Absences
+        public async Task<IActionResult> StudentAbsences()
+        {
+            var studentId = HttpContext.Session.GetInt32("StudentId");
+            if (studentId == null)
+            {
+                return Unauthorized(); // Students only
+            }
+
+            var absences = await _context.LignesFicheAbsence
+                .Include(lfa => lfa.FicheAbsence)
+                .ThenInclude(fa => fa.Matiere)
+                .Include(lfa => lfa.FicheAbsence.Enseignant)
+                .Where(lfa => lfa.CodeEtudiant == studentId.Value)
+                .ToListAsync();
+
+            var viewModel = absences.Select(a => new AbsenceDetailsViewModel
+            {
+                Date = a.FicheAbsence.DateJour,
+                SeanceName = a.FicheAbsence.FichesAbsenceSeances.FirstOrDefault()?.Seance.NomSeance,
+                TeacherName = $"{a.FicheAbsence.Enseignant.Nom} {a.FicheAbsence.Enseignant.Prenom}"
+            }).ToList();
+
+            return View(viewModel);
+        }
+
+        // Task 5: Absence Report by Date
         public async Task<IActionResult> AbsenceReport(DateTime? startDate, DateTime? endDate)
         {
             if (!startDate.HasValue || !endDate.HasValue)
@@ -110,24 +166,26 @@ namespace Absence.Controllers
             return View(viewModel);
         }
 
+        // Task 6: Absence Details by Subject
         public async Task<IActionResult> AbsenceDetails(int studentId, int subjectId)
         {
             var absences = await _context.LignesFicheAbsence
                 .Include(lfa => lfa.Etudiant)
                 .Include(lfa => lfa.FicheAbsence)
                 .ThenInclude(fa => fa.Matiere)
-                .Where(lfa => lfa.Etudiant.CodeEtudiant == studentId && lfa.FicheAbsence.CodeMatiere == subjectId)
+                .Include(lfa => lfa.FicheAbsence.Enseignant)
+                .Where(lfa => lfa.CodeEtudiant == studentId && lfa.FicheAbsence.CodeMatiere == subjectId)
                 .ToListAsync();
 
             var viewModel = absences.Select(a => new AbsenceDetailsViewModel
             {
                 Date = a.FicheAbsence.DateJour,
-                SeanceName = a.FicheAbsence.FichesAbsenceSeances.FirstOrDefault()?.Seance.NomSeance
+                SeanceName = a.FicheAbsence.FichesAbsenceSeances.FirstOrDefault()?.Seance.NomSeance,
+                TeacherName = $"{a.FicheAbsence.Enseignant.Nom} {a.FicheAbsence.Enseignant.Prenom}"
             }).ToList();
 
             return View(viewModel);
         }
-
-
     }
+
 }

@@ -4,15 +4,24 @@
 
 <form asp-action="MarkAbsence" method="post">
     <div>
-        <h4>Select Class</h4>
-        <select asp-for="Absences" asp-items="@(new SelectList(Model.Classes, "CodeClasse", "NomClasse"))">
-        </select>
+        <h4>Date</h4>
+        <input type="date" asp-for="Date" class="form-control" />
     </div>
+
     <div>
-        <h4>Select Seance</h4>
-        <select asp-for="Absences" asp-items="@(new SelectList(Model.Seances, "CodeSeance", "NomSeance"))">
+        <h4>Select Class</h4>
+        <select asp-for="SelectedClassId" asp-items="@(new SelectList(Model.Classes, "CodeClasse", "NomClasse"))" class="form-control">
+            <option value="">-- Select Class --</option>
         </select>
     </div>
+
+    <div>
+        <h4>Select Subject</h4>
+        <select asp-for="SelectedSubjectId" asp-items="@(new SelectList(Model.Matieres, "CodeMatiere", "NomMatiere"))" class="form-control">
+            <option value="">-- Select Subject --</option>
+        </select>
+    </div>
+
     <table>
         <thead>
             <tr>
@@ -33,5 +42,6 @@
             }
         </tbody>
     </table>
+
     <button type="submit">Submit</button>
 </form>
