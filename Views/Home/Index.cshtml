@@ -9,6 +9,7 @@
     <div class="row mt-4">
         @if (Context.Session.GetString("UserType") == "Admin")
         {
+            
             <div class="col-md-3">
                 <a asp-controller="Students" asp-action="Index" class="btn btn-primary btn-lg btn-block">Manage Students</a>
             </div>
@@ -16,11 +17,25 @@
                 <a asp-controller="Teachers" asp-action="Index" class="btn btn-primary btn-lg btn-block">Manage Teachers</a>
             </div>
             <div class="col-md-3">
+                <a asp-controller="Responsables" asp-action="Index" class="btn btn-primary btn-lg btn-block">Manage Responsables</a>
+            </div>
+            <div class="col-md-3">
                 <a asp-controller="Subjects" asp-action="Index" class="btn btn-primary btn-lg btn-block">Manage Subjects</a>
             </div>
             <div class="col-md-3">
-                <a asp-controller="Absences" asp-action="MarkAbsence" class="btn btn-primary btn-lg btn-block">Mark Absences</a>
+                <a asp-controller="Absences" asp-action="DailyAbsenceReport" class="btn btn-primary btn-lg btn-block">Daily Absence Report</a>
             </div>
+        }
+        else if (Context.Session.GetString("UserType") == "Responsable")
+        {
+            <div class="col-md-3">
+                <a asp-controller="Students" asp-action="Index" class="btn btn-primary btn-lg btn-block">Manage Students</a>
+            </div>
+         
+            <div class="col-md-3">
+                <a asp-controller="Absences" asp-action="AbsenceReport" class="btn btn-primary btn-lg btn-block">Absence Report</a>
+            </div>
+         
         }
         else if (Context.Session.GetString("UserType") == "Teacher")
         {

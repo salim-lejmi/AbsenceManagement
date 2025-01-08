@@ -19,6 +19,7 @@ namespace Absence.Data
         public DbSet<T_Matiere> Matieres { get; set; }
         public DbSet<T_Seance> Seances { get; set; }
         public DbSet<T_User> Users { get; set; }
+        public DbSet<T_Responsable> Responsables { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
