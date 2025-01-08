@@ -31,7 +31,11 @@
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-controller="Subjects" asp-action="Index">Subjects</a>
                             </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="Absences" asp-action="DailyAbsenceReport">Daily Absence Report</a>
+                            </li>
                         }
+
                         else if (Context.Session.GetString("UserType") == "Teacher")
                         {
                             <li class="nav-item">

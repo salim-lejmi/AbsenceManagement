@@ -353,8 +353,59 @@ public async Task<IActionResult> MarkAbsence()
                 })
                 .ToListAsync();
         }
+        [HttpGet]
+        public async Task<IActionResult> DailyAbsenceReport(DateTime? date)
+        {
+            var adminType = HttpContext.Session.GetString("UserType");
+            if (adminType != "Admin")
+            {
+                return Unauthorized();
+            }
+
+            // If no date is selected, use today's date
+            var selectedDate = date ?? DateTime.Today;
+
+            // Get all absences for the selected date
+            var absences = await _context.LignesFicheAbsence
+                .Include(lfa => lfa.FicheAbsence)
+                    .ThenInclude(fa => fa.Matiere)
+                .Include(lfa => lfa.FicheAbsence)
+                    .ThenInclude(fa => fa.Enseignant)
+                .Include(lfa => lfa.FicheAbsence)
+                    .ThenInclude(fa => fa.FichesAbsenceSeances)
+                        .ThenInclude(fas => fas.Seance)
+                .Include(lfa => lfa.Etudiant)
+                    .ThenInclude(e => e.Classe)
+                .Where(lfa => lfa.FicheAbsence.DateJour.Date == selectedDate.Date)
+                .OrderBy(lfa => lfa.Etudiant.Classe.NomClasse)
+                .ThenBy(lfa => lfa.Etudiant.Nom)
+                .ToListAsync();
+
+            var viewModel = new DailyAbsenceReportViewModel
+            {
+                Date = selectedDate,
+                AbsenceDetails = absences.Select(a => new DailyAbsenceDetail
+                {
+                    StudentName = $"{a.Etudiant.Nom} {a.Etudiant.Prenom}",
+                    ClassName = a.Etudiant.Classe.NomClasse,
+                    SubjectName = a.FicheAbsence.Matiere.NomMatiere,
+                    SeanceName = a.FicheAbsence.FichesAbsenceSeances
+                        .FirstOrDefault()?.Seance?.NomSeance ?? "N/A",
+                    TeacherName = $"{a.FicheAbsence.Enseignant.Nom} {a.FicheAbsence.Enseignant.Prenom}"
+                }).ToList()
+            };
+
+            // Get the week's dates for the date picker
+            var startOfWeek = selectedDate.AddDays(-(int)selectedDate.DayOfWeek);
+            ViewBag.WeekDates = Enumerable.Range(0, 7)
+                .Select(d => startOfWeek.AddDays(d))
+                .ToList();
+
+            return View(viewModel);
+        }
     }
 
-
-
 }
+
+
+
