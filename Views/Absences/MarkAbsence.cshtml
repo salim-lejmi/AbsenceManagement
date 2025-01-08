@@ -1,5 +1,4 @@
 ﻿@model Absence.ViewModels.MarkAbsenceViewModel
-
 <h2>Mark Absences</h2>
 <form asp-action="MarkAbsence" method="post">
     <div class="form-group">
@@ -12,21 +11,6 @@
             <option value="">Class will be selected automatically</option>
         </select>
         <input type="hidden" asp-for="SelectedClassId" id="hiddenClassId" />
-    </div>
-    <div class="form-group">
-        <label>Select Student</label>
-        <select id="studentSelect" class="form-control" onchange="updateClassInfo()">
-            <option value="">-- Select Student --</option>
-            @foreach (var classe in Model.Classes)
-            {
-                foreach (var student in classe.Etudiants)
-                {
-                    <option value="@student.CodeEtudiant" data-class-id="@classe.CodeClasse" data-class-name="@classe.NomClasse">
-                        @student.Nom @student.Prenom
-                    </option>
-                }
-            }
-        </select>
     </div>
     <div class="form-group">
         <label>Select Subject</label>
@@ -44,23 +28,48 @@
             <option value="">-- Select Seance --</option>
         </select>
     </div>
+    <div class="form-group">
+        <label>Select Student</label>
+        <select id="studentSelect" class="form-control" onchange="updateClassAndAbsence()">
+            <option value="">-- Select Student --</option>
+            @foreach (var classe in Model.Classes)
+            {
+                foreach (var student in classe.Etudiants)
+                {
+                    <option value="@student.CodeEtudiant" data-class-id="@classe.CodeClasse" data-class-name="@classe.NomClasse">
+                        @student.Nom @student.Prenom
+                    </option>
+                }
+            }
+        </select>
+        @for (var i = 0; i < Model.Absences.Count; i++)
+        {
+            <input type="hidden" asp-for="@Model.Absences[i].StudentId" />
+            <input type="hidden" asp-for="@Model.Absences[i].IsAbsent" id="absence-@Model.Absences[i].StudentId" />
+        }
+    </div>
     <button type="submit" class="btn btn-primary">Submit</button>
 </form>
 
 @section Scripts {
     <script>
-        function updateClassInfo() {
+        function updateClassAndAbsence() {
             const studentSelect = document.getElementById('studentSelect');
             const selectedOption = studentSelect.options[studentSelect.selectedIndex];
             const classDisplay = document.getElementById('classDisplay');
             const hiddenClassId = document.getElementById('hiddenClassId');
 
+            // Reset all absences
+            document.querySelectorAll('[id^="absence-"]').forEach(input => input.value = false);
+
             if (selectedOption.value) {
                 const classId = selectedOption.getAttribute('data-class-id');
                 const className = selectedOption.getAttribute('data-class-name');
-
                 classDisplay.innerHTML = `<option value="${classId}">${className}</option>`;
                 hiddenClassId.value = classId;
+
+                // Mark selected student as absent
+                document.getElementById('absence-' + selectedOption.value).value = true;
             } else {
                 classDisplay.innerHTML = '<option value="">Class will be selected automatically</option>';
                 hiddenClassId.value = '';

@@ -46,7 +46,6 @@ public async Task<IActionResult> MarkAbsence()
         }
 
 
-        // POST: MarkAbsence
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> MarkAbsence(MarkAbsenceViewModel model)
@@ -70,56 +69,69 @@ public async Task<IActionResult> MarkAbsence()
             {
                 try
                 {
-                    // Create the main absence record
+                    // ** Step 1: Create the main absence record (T_FicheAbsence) **
                     var ficheAbsence = new T_FicheAbsence
                     {
                         DateJour = model.Date,
                         CodeClasse = model.SelectedClassId,
                         CodeMatiere = model.SelectedSubjectId,
-                        CodeEnseignant = teacherId.Value
+                        CodeEnseignant = teacherId.Value // Ensure teacher ID is valid
                     };
 
+                    // Add and save the FicheAbsence record
                     _context.FichesAbsence.Add(ficheAbsence);
                     await _context.SaveChangesAsync();
 
-                    // Create the FicheAbsenceSeance record
+                    // ** Step 2: Create the FicheAbsenceSeance record **
                     var ficheAbsenceSeance = new T_FicheAbsenceSeance
                     {
-                        CodeFicheAbsence = ficheAbsence.CodeFicheAbsence,
+                        CodeFicheAbsence = ficheAbsence.CodeFicheAbsence, // Link to the created FicheAbsence
                         CodeSeance = model.SelectedSeanceId
                     };
 
+                    // Add and save the FicheAbsenceSeance record
                     _context.FicheAbsenceSeances.Add(ficheAbsenceSeance);
                     await _context.SaveChangesAsync();
 
-                    // Add individual student absences
+                    // ** Step 3: Add individual student absences (T_LigneFicheAbsence) **
                     if (model.Absences != null && model.Absences.Any())
                     {
                         foreach (var absence in model.Absences.Where(a => a.IsAbsent))
                         {
+                            // Ensure the absence is linked to the correct ficheAbsence and student
                             var ligneFicheAbsence = new T_LigneFicheAbsence
                             {
-                                CodeFicheAbsence = ficheAbsence.CodeFicheAbsence,
+                                CodeFicheAbsence = ficheAbsence.CodeFicheAbsence, // Link to the created FicheAbsence
                                 CodeEtudiant = absence.StudentId
                             };
 
                             _context.LignesFicheAbsence.Add(ligneFicheAbsence);
                         }
 
+                        // Save all the LignesFicheAbsence at once
                         await _context.SaveChangesAsync();
                     }
 
+                    // Commit the transaction
                     await transaction.CommitAsync();
+
+                    // Provide success feedback to the user
                     TempData["Success"] = "Absences have been successfully recorded.";
                     return RedirectToAction(nameof(MarkAbsence));
                 }
                 catch (Exception ex)
                 {
+                    // Rollback the transaction on failure
                     await transaction.RollbackAsync();
+
+                    // Log the error (optional, depending on your logging setup)
                     ModelState.AddModelError("", "An error occurred while saving the absence records. Please try again.");
+
+                    // Reload the necessary data for the view
                     model.Classes = await _context.Classes.Include(c => c.Etudiants).ToListAsync();
                     model.Matieres = await _context.Matieres.ToListAsync();
                     model.Seances = await _context.Seances.ToListAsync();
+
                     return View(model);
                 }
             }
