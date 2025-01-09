@@ -1,4 +1,5 @@
 ﻿using Absence.Data;
+using Absence.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -25,31 +26,82 @@ namespace Absence.Controllers
         [HttpPost]
         public async Task<IActionResult> Login(string email, string password)
         {
-            var user = await _context.Users
-                .FirstOrDefaultAsync(u => u.Email == email && u.Password == password);
-
-            if (user == null)
+            if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(password))
             {
-                ModelState.AddModelError("", "Invalid login attempt.");
+                ViewData["ErrorMessage"] = "Please enter both email and password.";
                 return View();
             }
 
-            // Store user info in session
-            HttpContext.Session.SetString("UserType", user.UserType);
-            HttpContext.Session.SetInt32("UserId", user.UserId);
+            try
+            {
+                var user = await _context.Users
+                    .Include(u => u.Teacher)
+                    .Include(u => u.Student)
+                    .FirstOrDefaultAsync(u => u.Email == email && u.Password == password);
 
-            if (user.TeacherId.HasValue)
-                HttpContext.Session.SetInt32("TeacherId", user.TeacherId.Value);
-            if (user.StudentId.HasValue)
-                HttpContext.Session.SetInt32("StudentId", user.StudentId.Value);
+                if (user == null)
+                {
+                    ViewData["ErrorMessage"] = "Invalid email or password.";
+                    return View();
+                }
 
-            return RedirectToAction("Index", "Home");
+                HttpContext.Session.SetString("UserType", user.UserType);
+                HttpContext.Session.SetInt32("UserId", user.UserId);
+
+                switch (user.UserType)
+                {
+                    case "Admin":
+                        HttpContext.Session.SetString("UserName", "Admin");
+                        break;
+
+                    case "Teacher":
+                        if (user.Teacher != null)
+                        {
+                            HttpContext.Session.SetInt32("TeacherId", user.TeacherId.Value);
+                            HttpContext.Session.SetString("UserName", $"{user.Teacher.Nom} {user.Teacher.Prenom}");
+                        }
+                        break;
+
+                    case "Student":
+                        if (user.Student != null)
+                        {
+                            HttpContext.Session.SetInt32("StudentId", user.StudentId.Value);
+                            HttpContext.Session.SetString("UserName", $"{user.Student.Nom} {user.Student.Prenom}");
+                        }
+                        break;
+
+                    case "Responsable":
+                        var responsable = await _context.Responsables
+                            .FirstOrDefaultAsync(r => r.Mail == user.Email);
+                        if (responsable != null)
+                        {
+                            HttpContext.Session.SetString("UserName", $"{responsable.Nom} {responsable.Prenom}");
+                        }
+                        break;
+                }
+
+                return RedirectToAction("Index", "Home");
+            }
+            catch (Exception ex)
+            {
+                ViewData["ErrorMessage"] = "An error occurred during login. Please try again.";
+                return View();
+            }
         }
 
         public IActionResult Logout()
         {
-            HttpContext.Session.Clear();
-            return RedirectToAction("Login");
+            try
+            {
+                HttpContext.Session.Clear();
+                return RedirectToAction("Login");
+            }
+            catch (Exception)
+            {
+                return RedirectToAction("Login");
+            }
         }
+
+        
     }
 }
