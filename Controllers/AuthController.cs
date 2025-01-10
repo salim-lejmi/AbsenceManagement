@@ -28,7 +28,7 @@ namespace Absence.Controllers
         {
             if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(password))
             {
-                ViewData["ErrorMessage"] = "Please enter both email and password.";
+                ViewData["ErrorMessage"] = "Veuillez saisir votre adresse e-mail et votre mot de passe.";
                 return View();
             }
 
@@ -41,7 +41,7 @@ namespace Absence.Controllers
 
                 if (user == null)
                 {
-                    ViewData["ErrorMessage"] = "Invalid email or password.";
+                    ViewData["ErrorMessage"] = "Email ou mot de passe invalide.";
                     return View();
                 }
 
@@ -84,7 +84,7 @@ namespace Absence.Controllers
             }
             catch (Exception ex)
             {
-                ViewData["ErrorMessage"] = "An error occurred during login. Please try again.";
+                ViewData["ErrorMessage"] = "Une erreur s'est produite lors de la connexion. Veuillez réessayer.";
                 return View();
             }
         }

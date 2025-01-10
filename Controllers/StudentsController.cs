@@ -19,7 +19,7 @@
             {
                 try
                 {
-                    Debug.WriteLine("Fetching students from database...");
+                    Debug.WriteLine("Récupérer les étudiants de la base de données...");
                     var students = await _context.Etudiants
                         .Include(s => s.Classe)
                         .ToListAsync();
@@ -37,7 +37,7 @@
             {
                 try
                 {
-                    Debug.WriteLine("Loading classes for Create view...");
+                    Debug.WriteLine("Chargement des classes pour la création d'une vue...");
                     var classes = _context.Classes.ToList();
                     Debug.WriteLine($"Found {classes.Count} classes");
                     ViewData["Classes"] = classes;
@@ -55,15 +55,13 @@
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Nom,Prenom,DateNaissance,CodeClasse,NumInscription,Adresse,Mail,Tel")] T_Etudiant student)
         {
-            Console.WriteLine("\n=== Starting Student Create Process ===");
+            Console.WriteLine("\n=== Démarrer le processus de création d'étudiants ===");
 
             try
             {
-                // Remove validation for virtual properties
                 ModelState.Remove("Classe");
                 ModelState.Remove("LignesFicheAbsence");
 
-                // Log all incoming data
                 Console.WriteLine("Incoming Student Data:");
                 foreach (var prop in typeof(T_Etudiant).GetProperties())
                 {
@@ -87,7 +85,6 @@
                     return View(student);
                 }
 
-                // Check if student with same NumInscription exists
                 var existingStudent = await _context.Etudiants
                     .FirstOrDefaultAsync(s => s.NumInscription == student.NumInscription);
 
@@ -105,14 +102,13 @@
                 Console.WriteLine("Saving changes to database");
                 await _context.SaveChangesAsync();
 
-                // New Code: Create a user account for the student
                 Console.WriteLine("Creating user account for the student");
                 var user = new T_User
                 {
                     Email = student.Mail,
-                    Password = student.NumInscription, // Using registration number as default password
+                    Password = student.NumInscription,
                     UserType = "Student",
-                    StudentId = student.CodeEtudiant // Assuming CodeEtudiant is generated after SaveChanges
+                    StudentId = student.CodeEtudiant 
                 };
 
                 Console.WriteLine("Adding user account to context");
@@ -137,11 +133,11 @@
 
         public async Task<IActionResult> Edit(int? id)
             {
-                Debug.WriteLine($"Editing student with ID: {id}");
+                Debug.WriteLine($"Modification d'un étudiant avec ID: {id}");
 
                 if (id == null)
                 {
-                    Debug.WriteLine("Edit failed: ID was null");
+                    Debug.WriteLine("Échec de la modification : l'ID était nul");
                     return NotFound();
                 }
 
@@ -172,7 +168,6 @@
                 Console.WriteLine($"Student Edit - Incoming Data for ID: {id}");
                 student.CodeEtudiant = id;
 
-                // Remove validation for virtual properties
                 ModelState.Remove("Classe");
                 ModelState.Remove("LignesFicheAbsence");
 
@@ -186,7 +181,6 @@
                             return NotFound();
                         }
 
-                        // Check if NumInscription is already in use by another student
                         var duplicateStudent = await _context.Etudiants
                             .FirstOrDefaultAsync(s => s.NumInscription == student.NumInscription && s.CodeEtudiant != id);
 
@@ -197,7 +191,6 @@
                             return View(student);
                         }
 
-                        // Update existing student properties
                         existingStudent.Nom = student.Nom;
                         existingStudent.Prenom = student.Prenom;
                         existingStudent.DateNaissance = student.DateNaissance;
@@ -251,11 +244,42 @@
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var student = await _context.Etudiants.FindAsync(id);
-            _context.Etudiants.Remove(student);
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            try
+            {
+                var student = await _context.Etudiants
+                    .Include(s => s.Classe)
+                    .FirstOrDefaultAsync(s => s.CodeEtudiant == id);
+
+                if (student == null)
+                    return NotFound();
+
+                // Remove associated LigneFicheAbsence records
+                var lignesFiche = await _context.LignesFicheAbsence
+                    .Where(lfa => lfa.CodeEtudiant == id)
+                    .ToListAsync();
+                _context.LignesFicheAbsence.RemoveRange(lignesFiche);
+
+                // Remove associated user account if exists
+                var user = await _context.Users
+                    .FirstOrDefaultAsync(u => u.StudentId == student.CodeEtudiant);
+                if (user != null)
+                {
+                    _context.Users.Remove(user);
+                }
+
+                // Finally, remove the student
+                _context.Etudiants.Remove(student);
+                await _context.SaveChangesAsync();
+
+                return RedirectToAction(nameof(Index));
+            }
+            catch
+            {
+                // Redirect to Index if any error occurs
+                return RedirectToAction(nameof(Index));
+            }
         }
+
 
 
     }

@@ -13,32 +13,32 @@ namespace Absence.Models {
         [Key]
         public int CodeEtudiant { get; set; }
 
-        [Required(ErrorMessage = "First Name is required")]
+        [Required(ErrorMessage = "Le nom est obligatoire")]
         public string Nom { get; set; }
 
-        [Required(ErrorMessage = "Last Name is required")]
+        [Required(ErrorMessage = "Le prenom est obligatoire")]
         public string Prenom { get; set; }
 
-        [Required(ErrorMessage = "Birth Date is required")]
+        [Required(ErrorMessage = "La date de recrutement est obligatoire")]
         [Display(Name = "Birth Date")]
         [DataType(DataType.Date)]
         public DateTime DateNaissance { get; set; }
 
-        [Required(ErrorMessage = "Class is required")]
+        [Required(ErrorMessage = "Classe est obligatoire")]
         [Display(Name = "Class")]
         public int CodeClasse { get; set; }
 
-        [Required(ErrorMessage = "Registration Number is required")]
+        [Required(ErrorMessage = "Le numéro d'enregistrement est requis")]
         [Display(Name = "Registration Number")]
         public string NumInscription { get; set; }
 
-        [Required(ErrorMessage = "Address is required")]
+        [Required(ErrorMessage = "Addresse est obligatoire")]
         public string Adresse { get; set; }
 
-        [EmailAddress(ErrorMessage = "Invalid Email Address")]
+        [EmailAddress(ErrorMessage = "Adresse e-mail non valide")]
         public string Mail { get; set; }
 
-        [Phone(ErrorMessage = "Invalid Phone Number")]
+        [Phone(ErrorMessage = "Numéro de téléphone invalide")]
         [Display(Name = "Phone")]
         public string Tel { get; set; }
 

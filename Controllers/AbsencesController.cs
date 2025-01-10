@@ -17,7 +17,6 @@ namespace Absence.Controllers
         }
 
 
-        // GET: MarkAbsence
 public async Task<IActionResult> MarkAbsence()
         {
             var teacherId = HttpContext.Session.GetInt32("TeacherId");
@@ -33,7 +32,7 @@ public async Task<IActionResult> MarkAbsence()
             {
                 Classes = classes,
                 Matieres = await _context.Matieres.ToListAsync(),
-                Seances = await _context.Seances.ToListAsync(),  // Add this
+                Seances = await _context.Seances.ToListAsync(), 
                 Date = DateTime.Now,
                 Absences = students.Select(s => new StudentAbsence
                 {
@@ -58,7 +57,7 @@ public async Task<IActionResult> MarkAbsence()
 
             if (model.SelectedClassId == 0 || model.SelectedSubjectId == 0 || model.SelectedSeanceId == 0)
             {
-                ModelState.AddModelError("", "Please select a class, subject, and seance.");
+                ModelState.AddModelError("", "Veuillez sélectionner une classe, une matiere et une séance.");
                 model.Classes = await _context.Classes.Include(c => c.Etudiants).ToListAsync();
                 model.Matieres = await _context.Matieres.ToListAsync();
                 model.Seances = await _context.Seances.ToListAsync();
@@ -69,65 +68,53 @@ public async Task<IActionResult> MarkAbsence()
             {
                 try
                 {
-                    // ** Step 1: Create the main absence record (T_FicheAbsence) **
                     var ficheAbsence = new T_FicheAbsence
                     {
                         DateJour = model.Date,
                         CodeClasse = model.SelectedClassId,
                         CodeMatiere = model.SelectedSubjectId,
-                        CodeEnseignant = teacherId.Value // Ensure teacher ID is valid
+                        CodeEnseignant = teacherId.Value 
                     };
 
-                    // Add and save the FicheAbsence record
                     _context.FichesAbsence.Add(ficheAbsence);
                     await _context.SaveChangesAsync();
 
-                    // ** Step 2: Create the FicheAbsenceSeance record **
                     var ficheAbsenceSeance = new T_FicheAbsenceSeance
                     {
-                        CodeFicheAbsence = ficheAbsence.CodeFicheAbsence, // Link to the created FicheAbsence
+                        CodeFicheAbsence = ficheAbsence.CodeFicheAbsence, 
                         CodeSeance = model.SelectedSeanceId
                     };
 
-                    // Add and save the FicheAbsenceSeance record
                     _context.FicheAbsenceSeances.Add(ficheAbsenceSeance);
                     await _context.SaveChangesAsync();
 
-                    // ** Step 3: Add individual student absences (T_LigneFicheAbsence) **
                     if (model.Absences != null && model.Absences.Any())
                     {
                         foreach (var absence in model.Absences.Where(a => a.IsAbsent))
                         {
-                            // Ensure the absence is linked to the correct ficheAbsence and student
                             var ligneFicheAbsence = new T_LigneFicheAbsence
                             {
-                                CodeFicheAbsence = ficheAbsence.CodeFicheAbsence, // Link to the created FicheAbsence
+                                CodeFicheAbsence = ficheAbsence.CodeFicheAbsence, 
                                 CodeEtudiant = absence.StudentId
                             };
 
                             _context.LignesFicheAbsence.Add(ligneFicheAbsence);
                         }
 
-                        // Save all the LignesFicheAbsence at once
                         await _context.SaveChangesAsync();
                     }
 
-                    // Commit the transaction
                     await transaction.CommitAsync();
 
-                    // Provide success feedback to the user
-                    TempData["Success"] = "Absences have been successfully recorded.";
+                    TempData["Success"] = "Les absences ont été enregistrées avec succès.";
                     return RedirectToAction(nameof(MarkAbsence));
                 }
                 catch (Exception ex)
                 {
-                    // Rollback the transaction on failure
                     await transaction.RollbackAsync();
 
-                    // Log the error (optional, depending on your logging setup)
-                    ModelState.AddModelError("", "An error occurred while saving the absence records. Please try again.");
+                    ModelState.AddModelError("", "Une erreur s'est produite lors de l'enregistrement des absences. Veuillez réessayer.");
 
-                    // Reload the necessary data for the view
                     model.Classes = await _context.Classes.Include(c => c.Etudiants).ToListAsync();
                     model.Matieres = await _context.Matieres.ToListAsync();
                     model.Seances = await _context.Seances.ToListAsync();
@@ -137,7 +124,6 @@ public async Task<IActionResult> MarkAbsence()
             }
         }
 
-        // GET: Student Absences
         public async Task<IActionResult> StudentAbsences()
         {
             var studentId = HttpContext.Session.GetInt32("StudentId");
@@ -170,7 +156,6 @@ public async Task<IActionResult> MarkAbsence()
             return View(viewModel);
         }
 
-        // GET: Absence Report
         public async Task<IActionResult> AbsenceReport(DateTime? startDate, DateTime? endDate, int? classeId, int? studentId)
         {
             var teacherId = HttpContext.Session.GetInt32("TeacherId");
@@ -179,14 +164,12 @@ public async Task<IActionResult> MarkAbsence()
                 return Unauthorized();
             }
 
-            // Base query
             var query = _context.LignesFicheAbsence
                 .Include(lfa => lfa.Etudiant)
                     .ThenInclude(e => e.Classe)
                 .Include(lfa => lfa.FicheAbsence)
                 .AsQueryable();
 
-            // Apply filters based on provided parameters
             if (startDate.HasValue)
             {
                 query = query.Where(lfa => lfa.FicheAbsence.DateJour >= startDate.Value);
@@ -222,7 +205,6 @@ public async Task<IActionResult> MarkAbsence()
                 .OrderByDescending(vm => vm.AbsenceCount)
                 .ToList();
 
-            // Populate ViewBag with data for dropdowns
             ViewBag.Classes = await _context.Classes
                 .Select(c => new SelectListItem { Value = c.CodeClasse.ToString(), Text = c.NomClasse })
                 .ToListAsync();
@@ -280,12 +262,10 @@ public async Task<IActionResult> MarkAbsence()
         }
 
 
-        // GET: Absence Details
         public async Task<IActionResult> SubjectAbsenceDetails(int? studentId, int? matiereId)
         {
             if (!studentId.HasValue || !matiereId.HasValue)
             {
-                // Populate dropdowns and return empty view
                 await PopulateDropdowns();
                 return View(new SubjectAbsenceDetailsViewModel
                 {
@@ -315,8 +295,8 @@ public async Task<IActionResult> MarkAbsence()
 
             var viewModel = new SubjectAbsenceDetailsViewModel
             {
-                StudentName = student != null ? $"{student.Nom} {student.Prenom}" : "Unknown Student",
-                SubjectName = matiere?.NomMatiere ?? "Unknown Subject",
+                StudentName = student != null ? $"{student.Nom} {student.Prenom}" : "Étudiant inconnu",
+                SubjectName = matiere?.NomMatiere ?? "matiere inconnu",
                 TotalAbsences = absences.Count,
                 AbsenceDetails = absences.Select(a => new AbsenceDetailsViewModel
                 {
@@ -362,10 +342,8 @@ public async Task<IActionResult> MarkAbsence()
                 return Unauthorized();
             }
 
-            // If no date is selected, use today's date
             var selectedDate = date ?? DateTime.Today;
 
-            // Get all absences for the selected date
             var absences = await _context.LignesFicheAbsence
                 .Include(lfa => lfa.FicheAbsence)
                     .ThenInclude(fa => fa.Matiere)
@@ -395,7 +373,6 @@ public async Task<IActionResult> MarkAbsence()
                 }).ToList()
             };
 
-            // Get the week's dates for the date picker
             var startOfWeek = selectedDate.AddDays(-(int)selectedDate.DayOfWeek);
             ViewBag.WeekDates = Enumerable.Range(0, 7)
                 .Select(d => startOfWeek.AddDays(d))

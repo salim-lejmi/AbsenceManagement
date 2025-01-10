@@ -1,23 +1,24 @@
 ﻿@model Absence.Models.T_Enseignant
-<h2>Create Teacher</h2>
+
+<h2>Créer Enseignant</h2>
 <form asp-action="Create" method="post">
     <div class="form-group">
-        <label asp-for="Nom" class="required">First Name</label>
+        <label asp-for="Nom" class="required">Nom</label>
         <input asp-for="Nom" class="form-control" required />
         <span asp-validation-for="Nom" class="text-danger"></span>
     </div>
     <div class="form-group">
-        <label asp-for="Prenom" class="required">Last Name</label>
+        <label asp-for="Prenom" class="required">Prénom</label>
         <input asp-for="Prenom" class="form-control" required />
         <span asp-validation-for="Prenom" class="text-danger"></span>
     </div>
     <div class="form-group">
-        <label asp-for="DateRecrutement" class="required">Recruitment Date</label>
+        <label asp-for="DateRecrutement" class="required">Date de recrutement</label>
         <input asp-for="DateRecrutement" type="date" class="form-control" required />
         <span asp-validation-for="DateRecrutement" class="text-danger"></span>
     </div>
     <div class="form-group">
-        <label asp-for="Adresse" class="required">Address</label>
+        <label asp-for="Adresse" class="required">Adresse</label>
         <input asp-for="Adresse" class="form-control" required />
         <span asp-validation-for="Adresse" class="text-danger"></span>
     </div>
@@ -27,23 +28,23 @@
         <span asp-validation-for="Mail" class="text-danger"></span>
     </div>
     <div class="form-group">
-        <label asp-for="Tel">Phone</label>
+        <label asp-for="Tel">Téléphone</label>
         <input asp-for="Tel" class="form-control" />
         <span asp-validation-for="Tel" class="text-danger"></span>
     </div>
     <div class="form-group">
-        <label asp-for="CodeDepartement" class="required">Department</label>
+        <label asp-for="CodeDepartement" class="required">Département</label>
         <select asp-for="CodeDepartement" asp-items="@(new SelectList(ViewData["Departments"] as List<Absence.Models.T_Departement>, "CodeDepartement", "NomDepartement"))" class="form-control" required>
-            <option value="">Select Department</option>
+            <option value="">Sélectionnez un département</option>
         </select>
         <span asp-validation-for="CodeDepartement" class="text-danger"></span>
     </div>
     <div class="form-group">
         <label asp-for="CodeGrade" class="required">Grade</label>
         <select asp-for="CodeGrade" asp-items="@(new SelectList(ViewData["Grades"] as List<Absence.Models.T_Grade>, "CodeGrade", "NomGrade"))" class="form-control" required>
-            <option value="">Select Grade</option>
+            <option value="">Sélectionnez un grade</option>
         </select>
         <span asp-validation-for="CodeGrade" class="text-danger"></span>
     </div>
-    <button type="submit" class="btn btn-primary">Create</button>
+    <button type="submit" class="btn btn-primary">Créer</button>
 </form>

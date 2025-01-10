@@ -1,13 +1,13 @@
 ﻿@model IEnumerable<Absence.Models.T_Matiere>
 
-<h2>Subjects</h2>
-<a asp-action="Create" class="btn btn-primary">Add New Subject</a>
+<h2>Matières</h2>
+<a asp-action="Create" class="btn btn-primary">Ajouter une nouvelle matière</a>
 
 <table class="table">
     <thead>
         <tr>
-            <th>Name</th>
-            <th>Hours (Course/TD/TP)</th>
+            <th>Nom</th>
+            <th>Heures (Cours/TD/TP)</th>
             <th>Actions</th>
         </tr>
     </thead>
@@ -18,8 +18,8 @@
                 <td>@subject.NomMatiere</td>
                 <td>@subject.NbrHeureCoursParSemaine / @subject.NbrHeureTDParSemaine / @subject.NbrHeureTPParSemaine</td>
                 <td>
-                    <a asp-action="Edit" asp-route-id="@subject.CodeMatiere" class="btn btn-warning">Edit</a>
-                    <a asp-action="Delete" asp-route-id="@subject.CodeMatiere" class="btn btn-danger">Delete</a>
+                    <a asp-action="Edit" asp-route-id="@subject.CodeMatiere" class="btn btn-warning">Modifier</a>
+                    <a asp-action="Delete" asp-route-id="@subject.CodeMatiere" class="btn btn-danger">Supprimer</a>
                 </td>
             </tr>
         }

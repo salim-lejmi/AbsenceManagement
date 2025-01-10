@@ -1,16 +1,16 @@
 ﻿@model IEnumerable<Absence.Models.T_Enseignant>
 
-<h2>Teachers</h2>
-<a asp-action="Create" class="btn btn-primary">Add New Teacher</a>
+<h2>Enseignants</h2>
+<a asp-action="Create" class="btn btn-primary">Ajouter un enseignant</a>
 
 <table class="table">
     <thead>
         <tr>
-            <th>Name</th>
-            <th>Department</th>
+            <th>Nom</th>
+            <th>Département</th>
             <th>Grade</th>
             <th>Email</th>
-            <th>Phone</th>
+            <th>Téléphone</th>
             <th>Actions</th>
         </tr>
     </thead>
@@ -24,8 +24,8 @@
                 <td>@teacher.Mail</td>
                 <td>@teacher.Tel</td>
                 <td>
-                    <a asp-action="Edit" asp-route-id="@teacher.CodeEnseignant" class="btn btn-warning">Edit</a>
-                    <a asp-action="Delete" asp-route-id="@teacher.CodeEnseignant" class="btn btn-danger">Delete</a>
+                    <a asp-action="Edit" asp-route-id="@teacher.CodeEnseignant" class="btn btn-warning">Modifier</a>
+                    <a asp-action="Delete" asp-route-id="@teacher.CodeEnseignant" class="btn btn-danger">Supprimer</a>
                 </td>
             </tr>
         }

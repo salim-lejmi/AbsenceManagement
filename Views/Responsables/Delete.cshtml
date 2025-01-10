@@ -1,16 +1,16 @@
 ﻿@model Absence.Models.T_Responsable
 
-<h2>Delete Responsable</h2>
+<h2>Supprimer le responsable</h2>
 
-<h3>Are you sure you want to delete this?</h3>
+<h3>Etes-vous sûr de vouloir supprimer ceci ?</h3>
 <div>
     <h4>Responsable Details</h4>
     <hr />
     <dl class="row">
-        <dt class="col-sm-2">First Name</dt>
+        <dt class="col-sm-2">Nom</dt>
         <dd class="col-sm-10">@Model.Nom</dd>
 
-        <dt class="col-sm-2">Last Name</dt>
+        <dt class="col-sm-2">Prenom</dt>
         <dd class="col-sm-10">@Model.Prenom</dd>
 
         <dt class="col-sm-2">Email</dt>
@@ -19,7 +19,7 @@
 
     <form asp-action="Delete">
         <input type="hidden" asp-for="CodeResponsable" />
-        <button type="submit" class="btn btn-danger">Delete</button>
-        <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+        <button type="submit" class="btn btn-danger">Supprimer</button>
+        <a asp-action="Index" class="btn btn-secondary">Retour à la liste</a>
     </form>
 </div>

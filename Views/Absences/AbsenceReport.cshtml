@@ -1,67 +1,127 @@
 ﻿@model List<Absence.ViewModels.StudentAbsenceReportViewModel>
 
 <div class="container mt-4">
-    <h2>Absence Report</h2>
+
+    <h2>Rapport d'absence</h2>
+
     <form asp-action="AbsenceReport" method="get" class="mb-4">
+
         <div class="row">
+
             <div class="col-md-3">
+
                 <div class="form-group">
-                    <label for="startDate">Start Date</label>
+
+                    <label for="startDate">Date de début</label>
+
                     <input type="date" name="startDate" id="startDate" class="form-control"
                            value="@ViewBag.StartDate" />
+
                 </div>
+
             </div>
+
             <div class="col-md-3">
+
                 <div class="form-group">
-                    <label for="endDate">End Date</label>
+
+                    <label for="endDate">Date de fin</label>
+
                     <input type="date" name="endDate" id="endDate" class="form-control"
                            value="@ViewBag.EndDate" />
+
                 </div>
+
             </div>
+
             <div class="col-md-3">
+
                 <div class="form-group">
-                    <label for="classeId">Class</label>
+
+                    <label for="classeId">Classe</label>
+
                     <select name="classeId" id="classeId" class="form-control">
-                        <option value="">-- Select Class --</option>
+
+                        <option value="">-- Sélectionner une classe --</option>
+
                         @foreach (var classe in ViewBag.Classes)
+
                         {
+
                             @if (ViewBag.SelectedClassId != null && ViewBag.SelectedClassId.ToString() == classe.Value)
+
                             {
+
                                 <option value="@classe.Value" selected>@classe.Text</option>
+
                             }
+
                             else
+
                             {
+
                                 <option value="@classe.Value">@classe.Text</option>
+
                             }
+
                         }
+
                     </select>
+
                 </div>
+
             </div>
+
             <div class="col-md-3">
+
                 <div class="form-group">
-                    <label for="studentId">Student</label>
+
+                    <label for="studentId">Étudiant</label>
+
                     <select name="studentId" id="studentId" class="form-control">
-                        <option value="">-- Select Student --</option>
+
+                        <option value="">-- Sélectionner un étudiant --</option>
+
                         @foreach (var student in ViewBag.Students)
+
                         {
+
                             @if (ViewBag.SelectedStudentId != null && ViewBag.SelectedStudentId.ToString() == student.Value)
+
                             {
+
                                 <option value="@student.Value" selected>@student.Text</option>
+
                             }
+
                             else
+
                             {
+
                                 <option value="@student.Value">@student.Text</option>
+
                             }
+
                         }
+
                     </select>
+
                 </div>
+
             </div>
+
         </div>
+
         <div class="row mt-3">
+
             <div class="col">
-                <button type="submit" class="btn btn-primary">Generate Report</button>
+
+                <button type="submit" class="btn btn-primary">Générer le rapport</button>
+
             </div>
+
         </div>
+
     </form>
 
     @if (Model != null && Model.Any())
@@ -70,9 +130,9 @@
             <table class="table table-striped">
                 <thead>
                     <tr>
-                        <th>Student</th>
-                        <th>Class</th>
-                        <th>Number of Absences</th>
+                        <th>Étudiant</th>
+                        <th>Classe</th>
+                        <th>Nombre d'absences</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
@@ -85,7 +145,7 @@
                             <td>@report.AbsenceCount</td>
                             <td>
                                 <a href="@Url.Action("AbsenceDetails", new { studentId = report.StudentId })"
-                                   class="btn btn-info btn-sm">View Details</a>
+                                   class="btn btn-info btn-sm">Voir les détails</a>
                             </td>
                         </tr>
                     }
@@ -96,7 +156,7 @@
     else if (Context.Request.Query.Count > 0)
     {
         <div class="alert alert-info">
-            No absences found for the selected criteria.
+            Aucune absence trouvée pour les critères sélectionnés.
         </div>
     }
 </div>

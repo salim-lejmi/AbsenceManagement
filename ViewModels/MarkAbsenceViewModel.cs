@@ -8,19 +8,19 @@ namespace Absence.ViewModels
         {
             Classes = new List<T_Classe>();
             Matieres = new List<T_Matiere>();
-            Seances = new List<T_Seance>();  // Add this
+            Seances = new List<T_Seance>();  
             Absences = new List<StudentAbsence>();
             Date = DateTime.Now;
         }
 
         public List<T_Classe> Classes { get; set; }
         public List<T_Matiere> Matieres { get; set; }
-        public List<T_Seance> Seances { get; set; }  // Add this
+        public List<T_Seance> Seances { get; set; } 
         public List<StudentAbsence> Absences { get; set; }
         public DateTime Date { get; set; }
         public int SelectedClassId { get; set; }
         public int SelectedSubjectId { get; set; }
-        public int SelectedSeanceId { get; set; }  // Add this
+        public int SelectedSeanceId { get; set; }  
     }
 
     public class StudentAbsence

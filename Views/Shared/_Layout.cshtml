@@ -60,7 +60,7 @@
     <header>
         <nav class="navbar navbar-expand-sm navbar-light bg-white border-bottom">
             <div class="container">
-                <a class="navbar-brand" asp-controller="Home" asp-action="Index">Absence Management</a>
+                <a class="navbar-brand" asp-controller="Home" asp-action="Index">Gestion des Absences</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse">
                     <span class="navbar-toggler-icon"></span>
                 </button>
@@ -69,72 +69,70 @@
                         @if (Context.Session.GetString("UserType") == "Admin")
                         {
                             <li class="nav-item">
-                                <a class="nav-link" asp-controller="Students" asp-action="Index">Students</a>
+                                <a class="nav-link" asp-controller="Students" asp-action="Index">Étudiants</a>
                             </li>
-                                <li class="nav-item">
-                                    <a class="nav-link text-dark" asp-controller="Teachers" asp-action="Index">Teachers</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link text-dark" asp-controller="Responsables" asp-action="Index">Responsables</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link text-dark" asp-controller="Subjects" asp-action="Index">Subjects</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link text-dark" asp-controller="Absences" asp-action="DailyAbsenceReport">Daily Absence Report</a>
-                                </li>
-                            }
-                            else if (Context.Session.GetString("UserType") == "Teacher")
-                            {
-                                <li class="nav-item">
-                                    <a class="nav-link text-dark" asp-controller="Absences" asp-action="MarkAbsence">Mark Absences</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link text-dark" asp-controller="Absences" asp-action="AbsenceReport">Absence Report</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" asp-controller="Absences" asp-action="SubjectAbsenceDetails">Subject-Specific Absences</a>
-                                </li>
-                            }
-                            else if (Context.Session.GetString("UserType") == "Responsable")
-                            {
-                                <li class="nav-item">
-                                    <a class="nav-link text-dark" asp-controller="Students" asp-action="Index">Manage Students</a>
-                                </li>
-                              
-                                <li class="nav-item">
-                                    <a class="nav-link text-dark" asp-controller="Absences" asp-action="AbsenceReport">Absence Report</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" asp-controller="Absences" asp-action="SubjectAbsenceDetails">Subject-Specific Absences</a>
-                                </li>
-                            
-                            }
-                            else if (Context.Session.GetString("UserType") == "Student")
-                            {
-                                <li class="nav-item">
-                                    <a class="nav-link text-dark" asp-controller="Absences" asp-action="StudentAbsences">My Absences</a>
-                                </li>
-                            }
-                        </ul>
-                        <ul class="navbar-nav">
-                            @if (Context.Session.GetString("UserType") != null)
-                            @if (Context.Session.GetString("UserType") != null)
-                            {
-                                <div class="d-flex align-items-center">
-                                    <span class="user-info">
-                                        @if (Context.Session.GetString("UserType") == "Admin")
-                                        {
-                                            @:Admin
-                                        }
-                                        else
-                                        {
-                                            @:@Context.Session.GetString("UserName")
-                                        }
-                                    </span>
-                                    <a class="btn btn-outline-primary" asp-controller="Auth" asp-action="Logout">Logout</a>
-                                </div>
-                            }
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="Teachers" asp-action="Index">Enseignants</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="Responsables" asp-action="Index">Responsables</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="Subjects" asp-action="Index">Matières</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="Absences" asp-action="DailyAbsenceReport">Rapport Quotidien</a>
+                            </li>
+                        }
+                        else if (Context.Session.GetString("UserType") == "Teacher")
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="Absences" asp-action="MarkAbsence">Marquer les Absences</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="Absences" asp-action="AbsenceReport">Rapport d'Absences</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Absences" asp-action="SubjectAbsenceDetails">Absences par Matière</a>
+                            </li>
+                        }
+                        else if (Context.Session.GetString("UserType") == "Responsable")
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="Students" asp-action="Index">Gérer les Étudiants</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="Absences" asp-action="AbsenceReport">Rapport d'Absences</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Absences" asp-action="SubjectAbsenceDetails">Absences par Matière</a>
+                            </li>
+                        }
+                        else if (Context.Session.GetString("UserType") == "Student")
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="Absences" asp-action="StudentAbsences">Mes Absences</a>
+                            </li>
+                        }
+                    </ul>
+                    <ul class="navbar-nav">
+                        @if (Context.Session.GetString("UserType") != null)
+                        {
+                            <div class="d-flex align-items-center">
+                                <span class="user-info">
+                                    @if (Context.Session.GetString("UserType") == "Admin")
+                                    {
+                                        @:Admin
+                                    }
+                                    else
+                                    {
+                                        @:@Context.Session.GetString("UserName")
+                                    }
+                                </span>
+                                <a class="btn btn-outline-primary" asp-controller="Auth" asp-action="Logout">Déconnexion</a>
+                            </div>
+                        }
+                    </ul>
                 </div>
             </div>
         </nav>
@@ -146,7 +144,7 @@
     </div>
     <footer class="footer">
         <div class="container text-center">
-            © @DateTime.Now.Year - Absence Management System
+            © @DateTime.Now.Year - Système de Gestion des Absences
         </div>
     </footer>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>

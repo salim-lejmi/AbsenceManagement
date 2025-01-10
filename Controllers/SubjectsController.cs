@@ -14,21 +14,18 @@ namespace Absence.Cosntroller
             _context = context;
         }
 
-        // GET: Subjects
         public async Task<IActionResult> Index()
         {
             var subjects = await _context.Matieres.ToListAsync();
             return View(subjects);
         }
 
-        // GET: Subjects/Create
         public IActionResult Create()
         {
             var subject = new T_Matiere();
             return View(subject);
         }
 
-        // POST: Subjects/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("NomMatiere,NbrHeureCoursParSemaine,NbrHeureTDParSemaine,NbrHeureTPParSemaine")] T_Matiere subject)
@@ -45,7 +42,6 @@ namespace Absence.Cosntroller
 
 
 
-        // GET: Subjects/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -62,7 +58,6 @@ namespace Absence.Cosntroller
             return View(subject);
         }
 
-        // POST: Subjects/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("CodeMatiere,NomMatiere,NbrHeureCoursParSemaine,NbrHeureTDParSemaine,NbrHeureTPParSemaine")] T_Matiere subject)
@@ -95,7 +90,6 @@ namespace Absence.Cosntroller
         }
 
 
-        // GET: Subjects/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -114,7 +108,6 @@ namespace Absence.Cosntroller
             return View(subject);
         }
 
-        // POST: Subjects/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
@@ -137,7 +130,6 @@ namespace Absence.Cosntroller
             return RedirectToAction(nameof(Index));
         }
 
-        // GET: Subjects/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)

@@ -1,61 +1,107 @@
 ﻿@model Absence.ViewModels.SubjectAbsenceDetailsViewModel
 
 <div class="container mt-4">
-    <h2>Subject-Specific Absence Details</h2>
+
+    <h2>Détails des absences par matière</h2>
+
     <form asp-action="SubjectAbsenceDetails" method="get" class="mb-4">
+
         <div class="row">
+
             <div class="col-md-5">
+
                 <div class="form-group">
-                    <label for="studentId">Student</label>
+
+                    <label for="studentId">Étudiant</label>
+
                     <select name="studentId" id="studentId" class="form-control" required>
-                        <option value="">-- Select Student --</option>
+
+                        <option value="">-- Sélectionner l'étudiant --</option>
+
                         @foreach (var student in ViewBag.Students)
+
                         {
+
                             @if (ViewBag.SelectedStudentId != null && ViewBag.SelectedStudentId.ToString() == student.Value)
+
                             {
+
                                 <option value="@student.Value" selected>@student.Text</option>
+
                             }
+
                             else
+
                             {
+
                                 <option value="@student.Value">@student.Text</option>
+
                             }
+
                         }
+
                     </select>
+
                 </div>
+
             </div>
+
             <div class="col-md-5">
+
                 <div class="form-group">
-                    <label for="matiereId">Subject</label>
+
+                    <label for="matiereId">Matière</label>
+
                     <select name="matiereId" id="matiereId" class="form-control" required>
-                        <option value="">-- Select Subject --</option>
+
+                        <option value="">-- Sélectionner la matière --</option>
+
                         @foreach (var matiere in ViewBag.Matieres)
+
                         {
+
                             @if (ViewBag.SelectedMatiereId != null && ViewBag.SelectedMatiereId.ToString() == matiere.Value)
+
                             {
+
                                 <option value="@matiere.Value" selected>@matiere.Text</option>
+
                             }
+
                             else
+
                             {
+
                                 <option value="@matiere.Value">@matiere.Text</option>
+
                             }
+
                         }
+
                     </select>
+
                 </div>
+
             </div>
+
             <div class="col-md-2">
-                <button type="submit" class="btn btn-primary mt-4">View Details</button>
+
+                <button type="submit" class="btn btn-primary mt-4">Voir les détails</button>
+
             </div>
+
         </div>
+
     </form>
 
     @if (!string.IsNullOrEmpty(Model.StudentName))
     {
         <div class="card mb-4">
             <div class="card-body">
-                <h5>Summary</h5>
-                <p><strong>Student:</strong> @Model.StudentName</p>
-                <p><strong>Subject:</strong> @Model.SubjectName</p>
-                <p><strong>Total Absences:</strong> @Model.TotalAbsences</p>
+                <h5>Résumé</h5>
+                <p><strong>Étudiant :</strong> @Model.StudentName</p>
+                <p><strong>Matière :</strong> @Model.SubjectName</p>
+                <p><strong>Nombre total d'absences :</strong> @Model.TotalAbsences</p>
             </div>
         </div>
 
@@ -66,8 +112,8 @@
                     <thead>
                         <tr>
                             <th>Date</th>
-                            <th>Seance</th>
-                            <th>Teacher</th>
+                            <th>Séance</th>
+                            <th>Enseignant</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -86,8 +132,9 @@
         else
         {
             <div class="alert alert-info">
-                No absences found for this student in this subject.
+                Aucune absence trouvée pour cet étudiant dans cette matière.
             </div>
         }
     }
 </div>
+

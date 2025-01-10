@@ -4,7 +4,7 @@
     {
         public int StudentId { get; set; }
         public string StudentName { get; set; }
-        public string ClassName { get; set; }  // Added this
+        public string ClassName { get; set; } 
         public int AbsenceCount { get; set; }
 
     }

@@ -1,36 +1,36 @@
 ﻿@model Absence.Models.T_Etudiant
 
-<h2>Edit Student</h2>
+<h2>Modifier Etudiant</h2>
 
 <form asp-action="Edit" method="post">
     <input type="hidden" asp-for="CodeEtudiant" />
 
     <div class="form-group">
-        <label asp-for="Nom" class="required">First Name</label>
+        <label asp-for="Nom" class="required">Nom</label>
         <input asp-for="Nom" class="form-control" required />
         <span asp-validation-for="Nom" class="text-danger"></span>
     </div>
 
     <div class="form-group">
-        <label asp-for="Prenom" class="required">Last Name</label>
+        <label asp-for="Prenom" class="required">Prenom</label>
         <input asp-for="Prenom" class="form-control" required />
         <span asp-validation-for="Prenom" class="text-danger"></span>
     </div>
 
     <div class="form-group">
-        <label asp-for="DateNaissance" class="required">Birth Date</label>
+        <label asp-for="DateNaissance" class="required">Date de naissance</label>
         <input asp-for="DateNaissance" type="date" class="form-control" required />
         <span asp-validation-for="DateNaissance" class="text-danger"></span>
     </div>
 
     <div class="form-group">
-        <label asp-for="NumInscription" class="required">Registration Number</label>
+        <label asp-for="NumInscription" class="required">Numéro d'inscription</label>
         <input asp-for="NumInscription" class="form-control" required />
         <span asp-validation-for="NumInscription" class="text-danger"></span>
     </div>
 
     <div class="form-group">
-        <label asp-for="Adresse" class="required">Address</label>
+        <label asp-for="Adresse" class="required">Addresse"</label>
         <input asp-for="Adresse" class="form-control" required />
         <span asp-validation-for="Adresse" class="text-danger"></span>
     </div>
@@ -42,22 +42,22 @@
     </div>
 
     <div class="form-group">
-        <label asp-for="Tel">Phone</label>
+        <label asp-for="Tel">Téléphone</label>
         <input asp-for="Tel" class="form-control" />
         <span asp-validation-for="Tel" class="text-danger"></span>
     </div>
 
     <div class="form-group">
-        <label asp-for="CodeClasse" class="required">Class</label>
+        <label asp-for="CodeClasse" class="required">Classe</label>
         <select asp-for="CodeClasse" asp-items="@(new SelectList(ViewData["Classes"] as List<Absence.Models.T_Classe>, "CodeClasse", "NomClasse"))" class="form-control" required>
-            <option value="">Select Class</option>
+            <option value="">Sélectionnez la classe</option>
         </select>
         <span asp-validation-for="CodeClasse" class="text-danger"></span>
     </div>
 
     <div class="form-group mt-3">
-        <button type="submit" class="btn btn-primary">Save Changes</button>
-        <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+        <button type="submit" class="btn btn-primary">Enregistrer les modifications</button>
+        <a asp-action="Index" class="btn btn-secondary">Retour à la liste</a>
     </div>
 </form>
 

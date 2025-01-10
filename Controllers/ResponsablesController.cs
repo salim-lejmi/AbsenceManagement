@@ -14,7 +14,6 @@ namespace Absence.Controllers
             _context = context;
         }
 
-        // GET: Responsables
         public async Task<IActionResult> Index()
         {
             if (HttpContext.Session.GetString("UserType") != "Admin")
@@ -24,7 +23,6 @@ namespace Absence.Controllers
             return View(await _context.Responsables.ToListAsync());
         }
 
-        // GET: Responsables/Create
         public IActionResult Create()
         {
             if (HttpContext.Session.GetString("UserType") != "Admin")
@@ -45,17 +43,15 @@ namespace Absence.Controllers
 
             if (ModelState.IsValid)
             {
-                // Check if email already exists
                 if (await _context.Responsables.AnyAsync(r => r.Mail == responsable.Mail))
                 {
-                    ModelState.AddModelError("Mail", "This email is already in use.");
+                    ModelState.AddModelError("Mail", "Cet email est déjà utilisé.");
                     return View(responsable);
                 }
 
                 _context.Add(responsable);
                 await _context.SaveChangesAsync();
 
-                // Create user account for the responsable
                 var user = new T_User
                 {
                     Email = responsable.Mail,
@@ -71,7 +67,6 @@ namespace Absence.Controllers
             return View(responsable);
         }
 
-        // GET: Responsables/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (HttpContext.Session.GetString("UserType") != "Admin")
@@ -110,19 +105,17 @@ namespace Absence.Controllers
             {
                 try
                 {
-                    // Check if email exists for other responsables
                     var existingResponsable = await _context.Responsables
                         .FirstOrDefaultAsync(r => r.Mail == responsable.Mail && r.CodeResponsable != id);
                     if (existingResponsable != null)
                     {
-                        ModelState.AddModelError("Mail", "This email is already in use.");
+                        ModelState.AddModelError("Mail", "Cet email est déjà utilisé.");
                         return View(responsable);
                     }
 
                     _context.Update(responsable);
                     await _context.SaveChangesAsync();
 
-                    // Update user account
                     var user = await _context.Users
                         .FirstOrDefaultAsync(u => u.Email == responsable.Mail);
                     if (user != null)
@@ -147,7 +140,6 @@ namespace Absence.Controllers
             return View(responsable);
         }
 
-        // GET: Responsables/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (HttpContext.Session.GetString("UserType") != "Admin")
@@ -170,7 +162,6 @@ namespace Absence.Controllers
             return View(responsable);
         }
 
-        // POST: Responsables/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
@@ -183,7 +174,6 @@ namespace Absence.Controllers
             var responsable = await _context.Responsables.FindAsync(id);
             if (responsable != null)
             {
-                // Delete associated user account
                 var user = await _context.Users
                     .FirstOrDefaultAsync(u => u.Email == responsable.Mail);
                 if (user != null)

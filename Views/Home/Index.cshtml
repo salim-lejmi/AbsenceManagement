@@ -68,123 +68,124 @@
 </style>
 
 <div class="dashboard-header text-center">
-    <h1 class="display-4 mb-2">Welcome to Absence Management System</h1>
-    <p class="lead mb-0">Manage your academic absences efficiently</p>
-</div>
-
-<div class="container">
-    <div class="row">
-        @if (Context.Session.GetString("UserType") == "Admin")
-        {
-            <div class="col-md-4">
-                <div class="action-card">
-                    <a asp-controller="Students" asp-action="Index" class="action-link">
-                        <div class="text-center">
-                            <div class="action-icon">👥</div>
-                            <h3 class="action-title">Manage Students</h3>
-                            <p class="action-description">Add, edit, or remove student records</p>
-                        </div>
-                    </a>
-                </div>
-            </div>
-
-            <div class="col-md-4">
-                <div class="action-card">
-                    <a asp-controller="Teachers" asp-action="Index" class="action-link">
-                        <div class="text-center">
-                            <div class="action-icon">👨‍🏫</div>
-                            <h3 class="action-title">Manage Teachers</h3>
-                            <p class="action-description">Oversee teacher information and assignments</p>
-                        </div>
-                    </a>
-                </div>
-            </div>
-
-            <div class="col-md-4">
-                <div class="action-card">
-                    <a asp-controller="Responsables" asp-action="Index" class="action-link">
-                        <div class="text-center">
-                            <div class="action-icon">👥</div>
-                            <h3 class="action-title">Manage Responsables</h3>
-                            <p class="action-description">Handle responsable assignments</p>
-                        </div>
-                    </a>
-                </div>
-            </div>
-
-            <div class="col-md-4">
-                <div class="action-card">
-                    <a asp-controller="Subjects" asp-action="Index" class="action-link">
-                        <div class="text-center">
-                            <div class="action-icon">📚</div>
-                            <h3 class="action-title">Manage Subjects</h3>
-                            <p class="action-description">Configure subjects and courses</p>
-                        </div>
-                    </a>
-                </div>
-            </div>
-
-            <div class="col-md-4">
-                <div class="action-card">
-                    <a asp-controller="Absences" asp-action="DailyAbsenceReport" class="action-link">
-                        <div class="text-center">
-                            <div class="action-icon">📊</div>
-                            <h3 class="action-title">Daily Absence Report</h3>
-                            <p class="action-description">View today's absence statistics</p>
-                        </div>
-                    </a>
-                </div>
-            </div>
-        }
-        else if (Context.Session.GetString("UserType") == "Responsable")
-        {
-            <div class="col-md-6">
-                <div class="action-card">
-                    <a asp-controller="Students" asp-action="Index" class="action-link">
-                        <div class="text-center">
-                            <div class="action-icon">👥</div>
-                            <h3 class="action-title">Manage Students</h3>
-                            <p class="action-description">View and manage student information</p>
-                        </div>
-                    </a>
-                </div>
-            </div>
-
-            <div class="col-md-6">
-                <div class="action-card">
-                    <a asp-controller="Absences" asp-action="AbsenceReport" class="action-link">
-                        <div class="text-center">
-                            <div class="action-icon">📊</div>
-                            <h3 class="action-title">Absence Report</h3>
-                            <p class="action-description">View detailed absence reports</p>
-                        </div>
-                    </a>
-                </div>
-            </div>
-        }
-        else if (Context.Session.GetString("UserType") == "Teacher")
-        {
-            <div class="col-md-6">
-                <div class="action-card">
-                    <a asp-controller="Absences" asp-action="MarkAbsence" class="action-link">
-                        <div class="text-center">
-                            <div class="action-icon">✍️</div>
-                            <h3 class="action-title">Mark Absences</h3>
-                            <p class="action-description">Record student attendance</p>
-                        </div>
-                    </a>
-                </div>
-            </div>
-        }
-        else
-        {
-            <div class="col-12">
-                <div class="no-access-message">
-                    <div class="action-icon mb-3">🔒</div>
-                    <h3>Limited Access</h3>
-                    <p>You do not have access to any management actions. Please contact your administrator if you believe this is an error.</p>
-                </div>
-            </div>
-        }
+    <div class="dashboard-header text-center">
+        <h1 class="display-4 mb-2">Bienvenue au Système de Gestion des Absences</h1>
+        <p class="lead mb-0">Gérez efficacement vos absences académiques</p>
     </div>
-</div>
+
+    <div class="container">
+        <div class="row">
+            @if (Context.Session.GetString("UserType") == "Admin")
+            {
+                <div class="col-md-4">
+                    <div class="action-card">
+                        <a asp-controller="Students" asp-action="Index" class="action-link">
+                            <div class="text-center">
+                                <div class="action-icon">👥</div>
+                                <h3 class="action-title">Gérer les Étudiants</h3>
+                                <p class="action-description">Ajouter, modifier ou supprimer les dossiers des étudiants</p>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="action-card">
+                        <a asp-controller="Teachers" asp-action="Index" class="action-link">
+                            <div class="text-center">
+                                <div class="action-icon">👨‍🏫</div>
+                                <h3 class="action-title">Gérer les Enseignants</h3>
+                                <p class="action-description">Superviser les informations et les affectations des enseignants</p>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="action-card">
+                        <a asp-controller="Responsables" asp-action="Index" class="action-link">
+                            <div class="text-center">
+                                <div class="action-icon">👥</div>
+                                <h3 class="action-title">Gérer les Responsables</h3>
+                                <p class="action-description">Gérer les affectations des responsables</p>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="action-card">
+                        <a asp-controller="Subjects" asp-action="Index" class="action-link">
+                            <div class="text-center">
+                                <div class="action-icon">📚</div>
+                                <h3 class="action-title">Gérer les Matières</h3>
+                                <p class="action-description">Configurer les matières et les cours</p>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="action-card">
+                        <a asp-controller="Absences" asp-action="DailyAbsenceReport" class="action-link">
+                            <div class="text-center">
+                                <div class="action-icon">📊</div>
+                                <h3 class="action-title">Rapport d'Absences Quotidien</h3>
+                                <p class="action-description">Voir les statistiques d'absence du jour</p>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            }
+            else if (Context.Session.GetString("UserType") == "Responsable")
+            {
+                <div class="col-md-6">
+                    <div class="action-card">
+                        <a asp-controller="Students" asp-action="Index" class="action-link">
+                            <div class="text-center">
+                                <div class="action-icon">👥</div>
+                                <h3 class="action-title">Gérer les Étudiants</h3>
+                                <p class="action-description">Voir et gérer les informations des étudiants</p>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="action-card">
+                        <a asp-controller="Absences" asp-action="AbsenceReport" class="action-link">
+                            <div class="text-center">
+                                <div class="action-icon">📊</div>
+                                <h3 class="action-title">Rapport d'Absences</h3>
+                                <p class="action-description">Voir les rapports détaillés des absences</p>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            }
+            else if (Context.Session.GetString("UserType") == "Teacher")
+            {
+                <div class="col-md-6">
+                    <div class="action-card">
+                        <a asp-controller="Absences" asp-action="MarkAbsence" class="action-link">
+                            <div class="text-center">
+                                <div class="action-icon">✍️</div>
+                                <h3 class="action-title">Marquer les Absences</h3>
+                                <p class="action-description">Enregistrer la présence des étudiants</p>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="col-12">
+                    <div class="no-access-message">
+                        <div class="action-icon mb-3">🔒</div>
+                        <h3>Accès Limité</h3>
+                        <p>Vous n'avez pas accès aux actions de gestion. Veuillez contacter votre administrateur si vous pensez qu'il s'agit d'une erreur.</p>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>

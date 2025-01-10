@@ -1,10 +1,11 @@
 ﻿@model Absence.Models.T_Enseignant
 
-<h2>Delete Teacher</h2>
-<p>Are you sure you want to delete the teacher <strong>@Model.Nom @Model.Prenom</strong>?</p>
+<h2>Supprimer Enseignant</h2>
+<p>Êtes-vous sûr de vouloir supprimer l'enseignant <strong>@Model.Nom @Model.Prenom</strong> ?</p>
 
 <form asp-action="Delete" asp-route-id="@Model.CodeEnseignant" method="post">
     <input type="hidden" asp-for="CodeEnseignant" />
-    <button type="submit" class="btn btn-danger">Delete</button>
-    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+    <button type="submit" class="btn btn-danger">Supprimer</button>
+    <a asp-action="Index" class="btn btn-secondary">Annuler</a>
 </form>
+

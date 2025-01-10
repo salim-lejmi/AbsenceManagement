@@ -38,12 +38,10 @@ namespace Absence.Controllers
 
             try
             {
-                // Remove validation for virtual properties
                 ModelState.Remove("Departement");
                 ModelState.Remove("Grade");
                 ModelState.Remove("FichesAbsence");
 
-                // Log all incoming data
                 Console.WriteLine("Incoming Teacher Data:");
                 foreach (var prop in typeof(T_Enseignant).GetProperties())
                 {
@@ -68,7 +66,6 @@ namespace Absence.Controllers
                     return View(teacher);
                 }
 
-                // Check if teacher with the same email exists
                 if (!string.IsNullOrEmpty(teacher.Mail))
                 {
                     var existingTeacher = await _context.Enseignants
@@ -90,14 +87,13 @@ namespace Absence.Controllers
                 Console.WriteLine("Saving changes to database");
                 await _context.SaveChangesAsync();
 
-                // New Code: Create a user account for the teacher
                 Console.WriteLine("Creating user account for the teacher");
                 var user = new T_User
                 {
                     Email = teacher.Mail,
-                    Password = teacher.Tel, // Using phone number as default password
+                    Password = teacher.Tel, 
                     UserType = "Teacher",
-                    TeacherId = teacher.CodeEnseignant // Assuming CodeEnseignant is generated after SaveChanges
+                    TeacherId = teacher.CodeEnseignant 
                 };
 
                 Console.WriteLine("Adding user account to context");
@@ -143,7 +139,6 @@ namespace Absence.Controllers
                 Console.WriteLine($"Teacher Edit - Incoming Data for ID: {id}");
                 teacher.CodeEnseignant = id;
 
-                // Remove validation for virtual properties
                 ModelState.Remove("Departement");
                 ModelState.Remove("Grade");
                 ModelState.Remove("FichesAbsence");
@@ -158,7 +153,6 @@ namespace Absence.Controllers
                             return NotFound();
                         }
 
-                        // Check if email is already in use by another teacher
                         if (!string.IsNullOrEmpty(teacher.Mail))
                         {
                             var duplicateTeacher = await _context.Enseignants
@@ -173,7 +167,6 @@ namespace Absence.Controllers
                             }
                         }
 
-                        // Update existing teacher properties
                         existingTeacher.Nom = teacher.Nom;
                         existingTeacher.Prenom = teacher.Prenom;
                         existingTeacher.DateRecrutement = teacher.DateRecrutement;
@@ -227,10 +220,57 @@ namespace Absence.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var teacher = await _context.Enseignants.FindAsync(id);
-            _context.Enseignants.Remove(teacher);
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            try
+            {
+                var teacher = await _context.Enseignants
+                    .Include(t => t.FichesAbsence)
+                    .FirstOrDefaultAsync(t => t.CodeEnseignant == id);
+
+                if (teacher == null)
+                    return NotFound();
+
+                // Handle associated FichesAbsence
+                if (teacher.FichesAbsence != null && teacher.FichesAbsence.Any())
+                {
+                    foreach (var fiche in teacher.FichesAbsence)
+                    {
+                        // Remove associated FicheAbsenceSeances
+                        var ficheSeances = await _context.FicheAbsenceSeances
+                            .Where(fas => fas.CodeFicheAbsence == fiche.CodeFicheAbsence)
+                            .ToListAsync();
+                        _context.FicheAbsenceSeances.RemoveRange(ficheSeances);
+
+                        // Remove associated LigneFicheAbsence
+                        var lignesFiche = await _context.LignesFicheAbsence
+                            .Where(lfa => lfa.CodeFicheAbsence == fiche.CodeFicheAbsence)
+                            .ToListAsync();
+                        _context.LignesFicheAbsence.RemoveRange(lignesFiche);
+
+                        // Remove the FicheAbsence
+                        _context.FichesAbsence.Remove(fiche);
+                    }
+                }
+
+                // Remove associated user account if exists
+                var user = await _context.Users
+                    .FirstOrDefaultAsync(u => u.Email == teacher.Mail);
+                if (user != null)
+                {
+                    _context.Users.Remove(user);
+                }
+
+                // Finally, remove the teacher
+                _context.Enseignants.Remove(teacher);
+                await _context.SaveChangesAsync();
+
+                return RedirectToAction(nameof(Index));
+            }
+            catch
+            {
+                // Redirect to Index if any error occurs
+                return RedirectToAction(nameof(Index));
+            }
         }
+
     }
 }

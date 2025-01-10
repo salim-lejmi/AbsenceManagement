@@ -8,8 +8,8 @@
 <table class="table">
     <thead>
         <tr>
-            <th>First Name</th>
-            <th>Last Name</th>
+            <th>Nom</th>
+            <th>Prenom</th>
             <th>Email</th>
             <th>Actions</th>
         </tr>
@@ -22,8 +22,8 @@
                 <td>@item.Prenom</td>
                 <td>@item.Mail</td>
                 <td>
-                    <a asp-action="Edit" asp-route-id="@item.CodeResponsable" class="btn btn-warning">Edit</a>
-                    <a asp-action="Delete" asp-route-id="@item.CodeResponsable" class="btn btn-danger">Delete</a>
+                    <a asp-action="Edit" asp-route-id="@item.CodeResponsable" class="btn btn-warning">Modifier</a>
+                    <a asp-action="Delete" asp-route-id="@item.CodeResponsable" class="btn btn-danger">Supprimer</a>
                 </td>
             </tr>
         }
