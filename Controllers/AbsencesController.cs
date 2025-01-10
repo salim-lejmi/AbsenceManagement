@@ -20,10 +20,7 @@ namespace Absence.Controllers
 public async Task<IActionResult> MarkAbsence()
         {
             var teacherId = HttpContext.Session.GetInt32("TeacherId");
-            if (teacherId == null)
-            {
-                return Unauthorized();
-            }
+        
 
             var classes = await _context.Classes.Include(c => c.Etudiants).ToListAsync();
             var students = classes.SelectMany(c => c.Etudiants).ToList();
@@ -50,10 +47,7 @@ public async Task<IActionResult> MarkAbsence()
         public async Task<IActionResult> MarkAbsence(MarkAbsenceViewModel model)
         {
             var teacherId = HttpContext.Session.GetInt32("TeacherId");
-            if (teacherId == null)
-            {
-                return Unauthorized();
-            }
+       
 
             if (model.SelectedClassId == 0 || model.SelectedSubjectId == 0 || model.SelectedSeanceId == 0)
             {
@@ -158,11 +152,7 @@ public async Task<IActionResult> MarkAbsence()
 
         public async Task<IActionResult> AbsenceReport(DateTime? startDate, DateTime? endDate, int? classeId, int? studentId)
         {
-            var teacherId = HttpContext.Session.GetInt32("TeacherId");
-            if (teacherId == null)
-            {
-                return Unauthorized();
-            }
+       
 
             var query = _context.LignesFicheAbsence
                 .Include(lfa => lfa.Etudiant)
@@ -224,11 +214,7 @@ public async Task<IActionResult> MarkAbsence()
 
         public async Task<IActionResult> AbsenceDetails(int studentId)
         {
-            var teacherId = HttpContext.Session.GetInt32("TeacherId");
-            if (teacherId == null)
-            {
-                return Unauthorized();
-            }
+         
 
             var absences = await _context.LignesFicheAbsence
                 .Include(lfa => lfa.FicheAbsence)

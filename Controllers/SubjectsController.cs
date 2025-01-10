@@ -123,7 +123,7 @@ namespace Absence.Cosntroller
                 }
                 catch (Exception ex)
                 {
-                    ModelState.AddModelError("", "Unable to delete. " + ex.Message);
+                    ModelState.AddModelError("", "Impossible de supprimer. " + ex.Message);
                     return View(subject);
                 }
             }
