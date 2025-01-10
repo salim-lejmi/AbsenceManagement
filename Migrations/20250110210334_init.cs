@@ -3,10 +3,12 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
+#pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
+
 namespace Absence.Migrations
 {
     /// <inheritdoc />
-    public partial class Init : Migration
+    public partial class init : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -64,6 +66,22 @@ namespace Absence.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Matieres", x => x.CodeMatiere);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Responsables",
+                columns: table => new
+                {
+                    CodeResponsable = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Nom = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Prenom = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Mail = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Password = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Responsables", x => x.CodeResponsable);
                 });
 
             migrationBuilder.CreateTable(
@@ -201,6 +219,33 @@ namespace Absence.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Users",
+                columns: table => new
+                {
+                    UserId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Password = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    UserType = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    TeacherId = table.Column<int>(type: "int", nullable: true),
+                    StudentId = table.Column<int>(type: "int", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Users", x => x.UserId);
+                    table.ForeignKey(
+                        name: "FK_Users_Enseignants_TeacherId",
+                        column: x => x.TeacherId,
+                        principalTable: "Enseignants",
+                        principalColumn: "CodeEnseignant");
+                    table.ForeignKey(
+                        name: "FK_Users_Etudiants_StudentId",
+                        column: x => x.StudentId,
+                        principalTable: "Etudiants",
+                        principalColumn: "CodeEtudiant");
+                });
+
+            migrationBuilder.CreateTable(
                 name: "FicheAbsenceSeances",
                 columns: table => new
                 {
@@ -248,6 +293,91 @@ namespace Absence.Migrations
                         principalColumn: "CodeFicheAbsence",
                         onDelete: ReferentialAction.Cascade);
                 });
+
+            migrationBuilder.InsertData(
+                table: "Departements",
+                columns: new[] { "CodeDepartement", "NomDepartement" },
+                values: new object[,]
+                {
+                    { 1, "Departement 1" },
+                    { 2, "Departement 2" },
+                    { 3, "Departement 3" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "Grades",
+                columns: new[] { "CodeGrade", "NomGrade" },
+                values: new object[,]
+                {
+                    { 1, "Grade 1" },
+                    { 2, "Grade 2" },
+                    { 3, "Grade 3" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "Groupes",
+                columns: new[] { "CodeGroupe", "NomGroupe" },
+                values: new object[,]
+                {
+                    { 1, "Groupe 1" },
+                    { 2, "Groupe 2" },
+                    { 3, "Groupe 3" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "Matieres",
+                columns: new[] { "CodeMatiere", "NbrHeureCoursParSemaine", "NbrHeureTDParSemaine", "NbrHeureTPParSemaine", "NomMatiere" },
+                values: new object[,]
+                {
+                    { 1, 2, 1, 0, "Anglais" },
+                    { 2, 3, 2, 1, "Web Dev" },
+                    { 3, 3, 2, 1, "SGBD" },
+                    { 4, 4, 2, 2, "Programmation" },
+                    { 5, 2, 1, 0, "Scrum" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "Responsables",
+                columns: new[] { "CodeResponsable", "Mail", "Nom", "Password", "Prenom" },
+                values: new object[] { 1, "responsable@gmail.com", "John", "0000", "Smith" });
+
+            migrationBuilder.InsertData(
+                table: "Seances",
+                columns: new[] { "CodeSeance", "HeureDebut", "HeureFin", "NomSeance" },
+                values: new object[,]
+                {
+                    { 1, new DateTime(2025, 1, 10, 8, 0, 0, 0, DateTimeKind.Unspecified), new DateTime(2025, 1, 10, 10, 0, 0, 0, DateTimeKind.Unspecified), "S1" },
+                    { 2, new DateTime(2025, 1, 10, 10, 0, 0, 0, DateTimeKind.Unspecified), new DateTime(2025, 1, 10, 12, 0, 0, 0, DateTimeKind.Unspecified), "S2" },
+                    { 3, new DateTime(2025, 1, 10, 14, 0, 0, 0, DateTimeKind.Unspecified), new DateTime(2025, 1, 10, 16, 0, 0, 0, DateTimeKind.Unspecified), "S3" },
+                    { 4, new DateTime(2025, 1, 10, 16, 0, 0, 0, DateTimeKind.Unspecified), new DateTime(2025, 1, 10, 18, 0, 0, 0, DateTimeKind.Unspecified), "S4" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "Users",
+                columns: new[] { "UserId", "Email", "Password", "StudentId", "TeacherId", "UserType" },
+                values: new object[] { 1, "admin@gmail.com", "admin", null, null, "Admin" });
+
+            migrationBuilder.InsertData(
+                table: "Classes",
+                columns: new[] { "CodeClasse", "CodeDepartement", "CodeGroupe", "NomClasse" },
+                values: new object[,]
+                {
+                    { 1, 1, 1, "Classe 1" },
+                    { 2, 2, 1, "Classe 2" },
+                    { 3, 2, 2, "Classe 3" },
+                    { 4, 3, 2, "Classe 4" },
+                    { 5, 3, 3, "Classe 5" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "Enseignants",
+                columns: new[] { "CodeEnseignant", "Adresse", "CodeDepartement", "CodeGrade", "DateRecrutement", "Mail", "Nom", "Prenom", "Tel" },
+                values: new object[] { 1, "Adresse Enseignant", 1, 1, new DateTime(2015, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "teacher@gmail.com", "Richard", "Roe", "87654321" });
+
+            migrationBuilder.InsertData(
+                table: "Etudiants",
+                columns: new[] { "CodeEtudiant", "Adresse", "CodeClasse", "DateNaissance", "Mail", "Nom", "NumInscription", "Prenom", "Tel" },
+                values: new object[] { 1, "Adresse Etudiant", 1, new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "student@gmail.com", "John", "12345", "Doe", "12345678" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Classes_CodeDepartement",
@@ -298,6 +428,16 @@ namespace Absence.Migrations
                 name: "IX_LignesFicheAbsence_CodeEtudiant",
                 table: "LignesFicheAbsence",
                 column: "CodeEtudiant");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Users_StudentId",
+                table: "Users",
+                column: "StudentId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Users_TeacherId",
+                table: "Users",
+                column: "TeacherId");
         }
 
         /// <inheritdoc />
@@ -310,16 +450,19 @@ namespace Absence.Migrations
                 name: "LignesFicheAbsence");
 
             migrationBuilder.DropTable(
-                name: "Seances");
+                name: "Responsables");
 
             migrationBuilder.DropTable(
-                name: "Etudiants");
+                name: "Users");
+
+            migrationBuilder.DropTable(
+                name: "Seances");
 
             migrationBuilder.DropTable(
                 name: "FichesAbsence");
 
             migrationBuilder.DropTable(
-                name: "Classes");
+                name: "Etudiants");
 
             migrationBuilder.DropTable(
                 name: "Enseignants");
@@ -328,13 +471,16 @@ namespace Absence.Migrations
                 name: "Matieres");
 
             migrationBuilder.DropTable(
-                name: "Groupes");
+                name: "Classes");
+
+            migrationBuilder.DropTable(
+                name: "Grades");
 
             migrationBuilder.DropTable(
                 name: "Departements");
 
             migrationBuilder.DropTable(
-                name: "Grades");
+                name: "Groupes");
         }
     }
 }

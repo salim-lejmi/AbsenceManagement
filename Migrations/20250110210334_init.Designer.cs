@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Absence.Migrations
 {
     [DbContext(typeof(AbsenceDbContext))]
-    [Migration("20250106171622_addUser")]
-    partial class addUser
+    [Migration("20250110210334_init")]
+    partial class init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -50,6 +50,43 @@ namespace Absence.Migrations
                     b.HasIndex("CodeGroupe");
 
                     b.ToTable("Classes");
+
+                    b.HasData(
+                        new
+                        {
+                            CodeClasse = 1,
+                            CodeDepartement = 1,
+                            CodeGroupe = 1,
+                            NomClasse = "Classe 1"
+                        },
+                        new
+                        {
+                            CodeClasse = 2,
+                            CodeDepartement = 2,
+                            CodeGroupe = 1,
+                            NomClasse = "Classe 2"
+                        },
+                        new
+                        {
+                            CodeClasse = 3,
+                            CodeDepartement = 2,
+                            CodeGroupe = 2,
+                            NomClasse = "Classe 3"
+                        },
+                        new
+                        {
+                            CodeClasse = 4,
+                            CodeDepartement = 3,
+                            CodeGroupe = 2,
+                            NomClasse = "Classe 4"
+                        },
+                        new
+                        {
+                            CodeClasse = 5,
+                            CodeDepartement = 3,
+                            CodeGroupe = 3,
+                            NomClasse = "Classe 5"
+                        });
                 });
 
             modelBuilder.Entity("Absence.Models.T_Departement", b =>
@@ -67,6 +104,23 @@ namespace Absence.Migrations
                     b.HasKey("CodeDepartement");
 
                     b.ToTable("Departements");
+
+                    b.HasData(
+                        new
+                        {
+                            CodeDepartement = 1,
+                            NomDepartement = "Departement 1"
+                        },
+                        new
+                        {
+                            CodeDepartement = 2,
+                            NomDepartement = "Departement 2"
+                        },
+                        new
+                        {
+                            CodeDepartement = 3,
+                            NomDepartement = "Departement 3"
+                        });
                 });
 
             modelBuilder.Entity("Absence.Models.T_Enseignant", b =>
@@ -113,6 +167,20 @@ namespace Absence.Migrations
                     b.HasIndex("CodeGrade");
 
                     b.ToTable("Enseignants");
+
+                    b.HasData(
+                        new
+                        {
+                            CodeEnseignant = 1,
+                            Adresse = "Adresse Enseignant",
+                            CodeDepartement = 1,
+                            CodeGrade = 1,
+                            DateRecrutement = new DateTime(2015, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Mail = "teacher@gmail.com",
+                            Nom = "Richard",
+                            Prenom = "Roe",
+                            Tel = "87654321"
+                        });
                 });
 
             modelBuilder.Entity("Absence.Models.T_Etudiant", b =>
@@ -158,6 +226,20 @@ namespace Absence.Migrations
                     b.HasIndex("CodeClasse");
 
                     b.ToTable("Etudiants");
+
+                    b.HasData(
+                        new
+                        {
+                            CodeEtudiant = 1,
+                            Adresse = "Adresse Etudiant",
+                            CodeClasse = 1,
+                            DateNaissance = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Mail = "student@gmail.com",
+                            Nom = "John",
+                            NumInscription = "12345",
+                            Prenom = "Doe",
+                            Tel = "12345678"
+                        });
                 });
 
             modelBuilder.Entity("Absence.Models.T_FicheAbsence", b =>
@@ -224,6 +306,23 @@ namespace Absence.Migrations
                     b.HasKey("CodeGrade");
 
                     b.ToTable("Grades");
+
+                    b.HasData(
+                        new
+                        {
+                            CodeGrade = 1,
+                            NomGrade = "Grade 1"
+                        },
+                        new
+                        {
+                            CodeGrade = 2,
+                            NomGrade = "Grade 2"
+                        },
+                        new
+                        {
+                            CodeGrade = 3,
+                            NomGrade = "Grade 3"
+                        });
                 });
 
             modelBuilder.Entity("Absence.Models.T_Groupe", b =>
@@ -241,6 +340,23 @@ namespace Absence.Migrations
                     b.HasKey("CodeGroupe");
 
                     b.ToTable("Groupes");
+
+                    b.HasData(
+                        new
+                        {
+                            CodeGroupe = 1,
+                            NomGroupe = "Groupe 1"
+                        },
+                        new
+                        {
+                            CodeGroupe = 2,
+                            NomGroupe = "Groupe 2"
+                        },
+                        new
+                        {
+                            CodeGroupe = 3,
+                            NomGroupe = "Groupe 3"
+                        });
                 });
 
             modelBuilder.Entity("Absence.Models.T_LigneFicheAbsence", b =>
@@ -282,6 +398,87 @@ namespace Absence.Migrations
                     b.HasKey("CodeMatiere");
 
                     b.ToTable("Matieres");
+
+                    b.HasData(
+                        new
+                        {
+                            CodeMatiere = 1,
+                            NbrHeureCoursParSemaine = 2,
+                            NbrHeureTDParSemaine = 1,
+                            NbrHeureTPParSemaine = 0,
+                            NomMatiere = "Anglais"
+                        },
+                        new
+                        {
+                            CodeMatiere = 2,
+                            NbrHeureCoursParSemaine = 3,
+                            NbrHeureTDParSemaine = 2,
+                            NbrHeureTPParSemaine = 1,
+                            NomMatiere = "Web Dev"
+                        },
+                        new
+                        {
+                            CodeMatiere = 3,
+                            NbrHeureCoursParSemaine = 3,
+                            NbrHeureTDParSemaine = 2,
+                            NbrHeureTPParSemaine = 1,
+                            NomMatiere = "SGBD"
+                        },
+                        new
+                        {
+                            CodeMatiere = 4,
+                            NbrHeureCoursParSemaine = 4,
+                            NbrHeureTDParSemaine = 2,
+                            NbrHeureTPParSemaine = 2,
+                            NomMatiere = "Programmation"
+                        },
+                        new
+                        {
+                            CodeMatiere = 5,
+                            NbrHeureCoursParSemaine = 2,
+                            NbrHeureTDParSemaine = 1,
+                            NbrHeureTPParSemaine = 0,
+                            NomMatiere = "Scrum"
+                        });
+                });
+
+            modelBuilder.Entity("Absence.Models.T_Responsable", b =>
+                {
+                    b.Property<int>("CodeResponsable")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CodeResponsable"));
+
+                    b.Property<string>("Mail")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Nom")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Password")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Prenom")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("CodeResponsable");
+
+                    b.ToTable("Responsables");
+
+                    b.HasData(
+                        new
+                        {
+                            CodeResponsable = 1,
+                            Mail = "responsable@gmail.com",
+                            Nom = "John",
+                            Password = "0000",
+                            Prenom = "Smith"
+                        });
                 });
 
             modelBuilder.Entity("Absence.Models.T_Seance", b =>
@@ -305,6 +502,36 @@ namespace Absence.Migrations
                     b.HasKey("CodeSeance");
 
                     b.ToTable("Seances");
+
+                    b.HasData(
+                        new
+                        {
+                            CodeSeance = 1,
+                            HeureDebut = new DateTime(2025, 1, 10, 8, 0, 0, 0, DateTimeKind.Unspecified),
+                            HeureFin = new DateTime(2025, 1, 10, 10, 0, 0, 0, DateTimeKind.Unspecified),
+                            NomSeance = "S1"
+                        },
+                        new
+                        {
+                            CodeSeance = 2,
+                            HeureDebut = new DateTime(2025, 1, 10, 10, 0, 0, 0, DateTimeKind.Unspecified),
+                            HeureFin = new DateTime(2025, 1, 10, 12, 0, 0, 0, DateTimeKind.Unspecified),
+                            NomSeance = "S2"
+                        },
+                        new
+                        {
+                            CodeSeance = 3,
+                            HeureDebut = new DateTime(2025, 1, 10, 14, 0, 0, 0, DateTimeKind.Unspecified),
+                            HeureFin = new DateTime(2025, 1, 10, 16, 0, 0, 0, DateTimeKind.Unspecified),
+                            NomSeance = "S3"
+                        },
+                        new
+                        {
+                            CodeSeance = 4,
+                            HeureDebut = new DateTime(2025, 1, 10, 16, 0, 0, 0, DateTimeKind.Unspecified),
+                            HeureFin = new DateTime(2025, 1, 10, 18, 0, 0, 0, DateTimeKind.Unspecified),
+                            NomSeance = "S4"
+                        });
                 });
 
             modelBuilder.Entity("Absence.Models.T_User", b =>

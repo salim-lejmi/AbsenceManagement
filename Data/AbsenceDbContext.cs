@@ -148,6 +148,16 @@ protected override void OnModelCreating(ModelBuilder modelBuilder)
                     CodeGrade = 1
                 }
             );
+
+            modelBuilder.Entity<T_User>().HasData(
+       new T_User
+       {
+           UserId = 1,
+           Email = "admin@gmail.com",
+           Password = "admin", 
+           UserType = "Admin"
+       }
+    );
             modelBuilder.Entity<T_Responsable>().HasData(
     new T_Responsable
     {
@@ -158,15 +168,6 @@ protected override void OnModelCreating(ModelBuilder modelBuilder)
         Password = "0000"
     }
 );
-            modelBuilder.Entity<T_User>().HasData(
-       new T_User
-       {
-           UserId = 1,
-           Email = "admin@gmail.com",
-           Password = "admin",
-           UserType = "Admin"
-       }
-   );
 
 
         }
