@@ -111,7 +111,7 @@ namespace Absence.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("CodeEtudiant,Nom,Prenom,DateNaissance,CodeClasse,NumInscription,Adresse,Mail,Tel")] T_Etudiant student)
+        public async Task<IActionResult> Edit(int id, [Bind("CodeEtudiant,Nom,Prenom,DateNaissance,CodeClasse,NumInscription,Adresse,Mail,Tel,Password")] T_Etudiant student)
         {
             try
             {
@@ -144,7 +144,14 @@ namespace Absence.Controllers
                     existingStudent.Tel = student.Tel;
                     existingStudent.Password = student.Password;
 
-                    
+                    var user = await _context.Users
+    .FirstOrDefaultAsync(u => u.Email == student.Mail);
+                    if (user != null)
+                    {
+                        user.Password = student.Password;
+                        await _context.SaveChangesAsync();
+                    }
+
                     await _context.SaveChangesAsync();
                     return RedirectToAction(nameof(Index));
                 }
