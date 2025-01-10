@@ -130,7 +130,9 @@ protected override void OnModelCreating(ModelBuilder modelBuilder)
                     NumInscription = "12345",
                     Adresse = "Adresse Etudiant",
                     Mail = "student@gmail.com",
-                    Tel = "12345678"
+                    Tel = "12345678",
+                    Password = "0000"
+
                 }
             );
 
@@ -144,10 +146,21 @@ protected override void OnModelCreating(ModelBuilder modelBuilder)
                     Adresse = "Adresse Enseignant",
                     Mail = "teacher@gmail.com",
                     Tel = "87654321",
+                    Password = "0000",
                     CodeDepartement = 1,
                     CodeGrade = 1
                 }
             );
+            modelBuilder.Entity<T_Responsable>().HasData(
+new T_Responsable
+{
+CodeResponsable = 1,
+Nom = "John",
+Prenom = "Smith",
+Mail = "responsable@gmail.com",
+Password = "0000"
+}
+);
 
             modelBuilder.Entity<T_User>().HasData(
        new T_User
@@ -158,16 +171,34 @@ protected override void OnModelCreating(ModelBuilder modelBuilder)
            UserType = "Admin"
        }
     );
-            modelBuilder.Entity<T_Responsable>().HasData(
-    new T_Responsable
-    {
-        CodeResponsable = 1,
-        Nom = "John",
-        Prenom = "Smith",
-        Mail = "responsable@gmail.com",
-        Password = "0000"
-    }
+            modelBuilder.Entity<T_User>().HasData(
+ new T_User
+ {
+     UserId = 2,
+     Email = "teacher@gmail.com",
+     Password = "0000",
+     UserType = "Teacher"
+ }
 );
+            modelBuilder.Entity<T_User>().HasData(
+ new T_User
+ {
+     UserId = 3,
+     Email = "student@gmail.com",
+     Password = "0000",
+     UserType = "Student"
+ }
+);
+            modelBuilder.Entity<T_User>().HasData(
+ new T_User
+ {
+     UserId = 4,
+     Email = "responsable@gmail.com",
+     Password = "0000",
+     UserType = "Responsable"
+ }
+);
+   
 
 
         }

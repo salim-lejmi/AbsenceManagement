@@ -42,6 +42,8 @@ namespace Absence.Models
         [Required(ErrorMessage = "Grade est obligatoire")]
         [Display(Name = "Grade")]
         public int CodeGrade { get; set; }
+        [Required(ErrorMessage = "Le mot de passe est requis")]
+        public string Password { get; set; }
 
         public virtual T_Departement Departement { get; set; }
         public virtual T_Grade Grade { get; set; }

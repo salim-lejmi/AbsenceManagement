@@ -40,6 +40,11 @@
         <input asp-for="Tel" class="form-control" />
         <span asp-validation-for="Tel" class="text-danger"></span>
     </div>
+    <div class="form-group">
+        <label asp-for="Password" class="control-label">Mot de passe</label>
+        <input asp-for="Password" class="form-control" type="password" />
+        <span asp-validation-for="Password" class="text-danger"></span>
+    </div>
 
     <div class="form-group">
         <label asp-for="CodeDepartement" class="required">Département</label>

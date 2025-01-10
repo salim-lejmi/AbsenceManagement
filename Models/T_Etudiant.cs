@@ -41,7 +41,8 @@ namespace Absence.Models {
         [Phone(ErrorMessage = "Numéro de téléphone invalide")]
         [Display(Name = "Phone")]
         public string Tel { get; set; }
-
+        [Required(ErrorMessage = "Le mot de passe est requis")]
+        public string Password { get; set; }
         public virtual T_Classe Classe { get; set; }
         public virtual ICollection<T_LigneFicheAbsence> LignesFicheAbsence { get; set; }
     }

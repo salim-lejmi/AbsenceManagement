@@ -44,7 +44,7 @@ namespace Absence.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Nom,Prenom,DateNaissance,CodeClasse,NumInscription,Adresse,Mail,Tel")] T_Etudiant student)
+        public async Task<IActionResult> Create([Bind("Nom,Prenom,DateNaissance,CodeClasse,NumInscription,Adresse,Mail,Tel,Password")] T_Etudiant student)
         {
             try
             {
@@ -73,7 +73,7 @@ namespace Absence.Controllers
                 var user = new T_User
                 {
                     Email = student.Mail,
-                    Password = student.NumInscription,
+                    Password = student.Password,
                     UserType = "Student",
                     StudentId = student.CodeEtudiant
                 };
@@ -142,7 +142,9 @@ namespace Absence.Controllers
                     existingStudent.Adresse = student.Adresse;
                     existingStudent.Mail = student.Mail;
                     existingStudent.Tel = student.Tel;
+                    existingStudent.Password = student.Password;
 
+                    
                     await _context.SaveChangesAsync();
                     return RedirectToAction(nameof(Index));
                 }

@@ -14,10 +14,13 @@ namespace Absence.Models
         [Required]
         public string UserType { get; set; } 
         public int? TeacherId { get; set; } 
-        public int? StudentId { get; set; } 
+        public int? StudentId { get; set; }
+        public int? ResponsableId { get; set; }
 
         public virtual T_Enseignant Teacher { get; set; }
         public virtual T_Etudiant Student { get; set; }
+        public virtual T_Responsable Responsable { get; set; }
+
     }
 }
 

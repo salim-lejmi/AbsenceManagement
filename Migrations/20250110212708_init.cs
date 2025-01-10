@@ -112,7 +112,8 @@ namespace Absence.Migrations
                     Mail = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Tel = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     CodeDepartement = table.Column<int>(type: "int", nullable: false),
-                    CodeGrade = table.Column<int>(type: "int", nullable: false)
+                    CodeGrade = table.Column<int>(type: "int", nullable: false),
+                    Password = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -171,7 +172,8 @@ namespace Absence.Migrations
                     NumInscription = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Adresse = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Mail = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Tel = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    Tel = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Password = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -228,7 +230,8 @@ namespace Absence.Migrations
                     Password = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     UserType = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     TeacherId = table.Column<int>(type: "int", nullable: true),
-                    StudentId = table.Column<int>(type: "int", nullable: true)
+                    StudentId = table.Column<int>(type: "int", nullable: true),
+                    ResponsableId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -243,6 +246,11 @@ namespace Absence.Migrations
                         column: x => x.StudentId,
                         principalTable: "Etudiants",
                         principalColumn: "CodeEtudiant");
+                    table.ForeignKey(
+                        name: "FK_Users_Responsables_ResponsableId",
+                        column: x => x.ResponsableId,
+                        principalTable: "Responsables",
+                        principalColumn: "CodeResponsable");
                 });
 
             migrationBuilder.CreateTable(
@@ -354,8 +362,14 @@ namespace Absence.Migrations
 
             migrationBuilder.InsertData(
                 table: "Users",
-                columns: new[] { "UserId", "Email", "Password", "StudentId", "TeacherId", "UserType" },
-                values: new object[] { 1, "admin@gmail.com", "admin", null, null, "Admin" });
+                columns: new[] { "UserId", "Email", "Password", "ResponsableId", "StudentId", "TeacherId", "UserType" },
+                values: new object[,]
+                {
+                    { 1, "admin@gmail.com", "admin", null, null, null, "Admin" },
+                    { 2, "teacher@gmail.com", "0000", null, null, null, "Teacher" },
+                    { 3, "student@gmail.com", "0000", null, null, null, "Student" },
+                    { 4, "responsable@gmail.com", "0000", null, null, null, "Responsable" }
+                });
 
             migrationBuilder.InsertData(
                 table: "Classes",
@@ -371,13 +385,13 @@ namespace Absence.Migrations
 
             migrationBuilder.InsertData(
                 table: "Enseignants",
-                columns: new[] { "CodeEnseignant", "Adresse", "CodeDepartement", "CodeGrade", "DateRecrutement", "Mail", "Nom", "Prenom", "Tel" },
-                values: new object[] { 1, "Adresse Enseignant", 1, 1, new DateTime(2015, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "teacher@gmail.com", "Richard", "Roe", "87654321" });
+                columns: new[] { "CodeEnseignant", "Adresse", "CodeDepartement", "CodeGrade", "DateRecrutement", "Mail", "Nom", "Password", "Prenom", "Tel" },
+                values: new object[] { 1, "Adresse Enseignant", 1, 1, new DateTime(2015, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "teacher@gmail.com", "Richard", "0000", "Roe", "87654321" });
 
             migrationBuilder.InsertData(
                 table: "Etudiants",
-                columns: new[] { "CodeEtudiant", "Adresse", "CodeClasse", "DateNaissance", "Mail", "Nom", "NumInscription", "Prenom", "Tel" },
-                values: new object[] { 1, "Adresse Etudiant", 1, new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "student@gmail.com", "John", "12345", "Doe", "12345678" });
+                columns: new[] { "CodeEtudiant", "Adresse", "CodeClasse", "DateNaissance", "Mail", "Nom", "NumInscription", "Password", "Prenom", "Tel" },
+                values: new object[] { 1, "Adresse Etudiant", 1, new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "student@gmail.com", "John", "12345", "0000", "Doe", "12345678" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Classes_CodeDepartement",
@@ -430,6 +444,11 @@ namespace Absence.Migrations
                 column: "CodeEtudiant");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Users_ResponsableId",
+                table: "Users",
+                column: "ResponsableId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Users_StudentId",
                 table: "Users",
                 column: "StudentId");
@@ -450,9 +469,6 @@ namespace Absence.Migrations
                 name: "LignesFicheAbsence");
 
             migrationBuilder.DropTable(
-                name: "Responsables");
-
-            migrationBuilder.DropTable(
                 name: "Users");
 
             migrationBuilder.DropTable(
@@ -463,6 +479,9 @@ namespace Absence.Migrations
 
             migrationBuilder.DropTable(
                 name: "Etudiants");
+
+            migrationBuilder.DropTable(
+                name: "Responsables");
 
             migrationBuilder.DropTable(
                 name: "Enseignants");

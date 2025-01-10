@@ -56,7 +56,9 @@ namespace Absence.Controllers
                 {
                     Email = responsable.Mail,
                     Password = responsable.Password,
-                    UserType = "Responsable"
+                    UserType = "Responsable",
+                    ResponsableId = responsable.CodeResponsable
+
                 };
 
                 _context.Users.Add(user);

@@ -36,6 +36,12 @@
         <input asp-for="Tel" class="form-control" />
         <span asp-validation-for="Tel" class="text-danger"></span>
     </div>
+
+    <div class="form-group">
+        <label asp-for="Password" class="control-label">Mot de passe</label>
+        <input asp-for="Password" class="form-control" type="password" />
+        <span asp-validation-for="Password" class="text-danger"></span>
+    </div>
     <div class="form-group">
         <label asp-for="CodeClasse" class="required">Classe</label>
         <select asp-for="CodeClasse" asp-items="@(new SelectList(ViewData["Classes"] as List<Absence.Models.T_Classe>, "CodeClasse", "NomClasse"))" class="form-control" required>
@@ -43,5 +49,6 @@
         </select>
         <span asp-validation-for="CodeClasse" class="text-danger"></span>
     </div>
+
     <button type="submit" class="btn btn-primary">Créer</button>
 </form>

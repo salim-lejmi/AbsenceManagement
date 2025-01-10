@@ -149,6 +149,10 @@ namespace Absence.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("Password")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Prenom")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -175,6 +179,7 @@ namespace Absence.Migrations
                             DateRecrutement = new DateTime(2015, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Mail = "teacher@gmail.com",
                             Nom = "Richard",
+                            Password = "0000",
                             Prenom = "Roe",
                             Tel = "87654321"
                         });
@@ -210,6 +215,10 @@ namespace Absence.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("Password")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Prenom")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -234,6 +243,7 @@ namespace Absence.Migrations
                             Mail = "student@gmail.com",
                             Nom = "John",
                             NumInscription = "12345",
+                            Password = "0000",
                             Prenom = "Doe",
                             Tel = "12345678"
                         });
@@ -547,6 +557,9 @@ namespace Absence.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int?>("ResponsableId")
+                        .HasColumnType("int");
+
                     b.Property<int?>("StudentId")
                         .HasColumnType("int");
 
@@ -558,6 +571,8 @@ namespace Absence.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("UserId");
+
+                    b.HasIndex("ResponsableId");
 
                     b.HasIndex("StudentId");
 
@@ -572,6 +587,27 @@ namespace Absence.Migrations
                             Email = "admin@gmail.com",
                             Password = "admin",
                             UserType = "Admin"
+                        },
+                        new
+                        {
+                            UserId = 2,
+                            Email = "teacher@gmail.com",
+                            Password = "0000",
+                            UserType = "Teacher"
+                        },
+                        new
+                        {
+                            UserId = 3,
+                            Email = "student@gmail.com",
+                            Password = "0000",
+                            UserType = "Student"
+                        },
+                        new
+                        {
+                            UserId = 4,
+                            Email = "responsable@gmail.com",
+                            Password = "0000",
+                            UserType = "Responsable"
                         });
                 });
 
@@ -691,6 +727,10 @@ namespace Absence.Migrations
 
             modelBuilder.Entity("Absence.Models.T_User", b =>
                 {
+                    b.HasOne("Absence.Models.T_Responsable", "Responsable")
+                        .WithMany()
+                        .HasForeignKey("ResponsableId");
+
                     b.HasOne("Absence.Models.T_Etudiant", "Student")
                         .WithMany()
                         .HasForeignKey("StudentId");
@@ -698,6 +738,8 @@ namespace Absence.Migrations
                     b.HasOne("Absence.Models.T_Enseignant", "Teacher")
                         .WithMany()
                         .HasForeignKey("TeacherId");
+
+                    b.Navigation("Responsable");
 
                     b.Navigation("Student");
 
