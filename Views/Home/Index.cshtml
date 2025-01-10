@@ -162,6 +162,17 @@
                         </a>
                     </div>
                 </div>
+                <div class="col-md-4">
+                    <div class="action-card">
+                        <a asp-controller="Subjects" asp-action="Index" class="action-link">
+                            <div class="text-center">
+                                <div class="action-icon">📚</div>
+                                <h3 class="action-title">Gérer les Matières</h3>
+                                <p class="action-description">Configurer les matières et les cours</p>
+                            </div>
+                        </a>
+                    </div>
+                </div>
             }
             else if (Context.Session.GetString("UserType") == "Teacher")
             {
