@@ -77,7 +77,6 @@ protected override void OnModelCreating(ModelBuilder modelBuilder)
                 .WithOne(e => e.Classe)
                 .HasForeignKey(e => e.CodeClasse);
 
-            // Seed data
             modelBuilder.Entity<T_Seance>().HasData(
                 new T_Seance { CodeSeance = 1, NomSeance = "S1", HeureDebut = DateTime.Parse("08:00"), HeureFin = DateTime.Parse("10:00") },
                 new T_Seance { CodeSeance = 2, NomSeance = "S2", HeureDebut = DateTime.Parse("10:00"), HeureFin = DateTime.Parse("12:00") },
